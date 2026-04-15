@@ -40,3 +40,10 @@
 .read-the-docs {
   color: #888;
 }
+
+/* layout styles for Orichalcum components */
+body{background:#f5f7fb;color:#111}
+#root{padding:18px}
+
+/* simple responsive container adjustments handled inline in components */
+

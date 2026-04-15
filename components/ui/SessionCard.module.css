@@ -1,0 +1,38 @@
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.06);
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.image {
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+.tags { margin-top: 12px; display:flex; flex-wrap:wrap; }
+.title { font-size: 18px; margin: 10px 0 6px 0 }
+.meta { display:flex; gap:12px; color:#64748b; font-size:13px; align-items:center }
+.metaItem { display:flex; gap:6px; align-items:center }
+.description {
+  margin-top: 12px;
+  color:#475569;
+  font-size:14px;
+  display:-webkit-box;
+  -webkit-line-clamp:4;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+.footer { display:flex; justify-content:space-between; align-items:center; margin-top:14px }
+.players { color:#334155; display:flex; gap:8px; align-items:center }
+.apply {
+  background: linear-gradient(180deg,#10b981,#059669);
+  color:white;
+  border:none;
+  padding:8px 12px;
+  border-radius:8px;
+  cursor:pointer;
+}

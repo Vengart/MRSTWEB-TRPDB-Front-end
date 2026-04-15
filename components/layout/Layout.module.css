@@ -1,0 +1,29 @@
+.page {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  background: #ffffff;
+  color: #0f172a;
+}
+.main {
+  flex: 1 0 auto;
+  padding: 24px 18px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.fab {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  background: linear-gradient(180deg,#ff7a18,#ff4d00);
+  color: white;
+  border: none;
+  font-size: 28px;
+  box-shadow: 0 8px 20px rgba(2,6,23,0.12);
+  cursor: pointer;
+  display:flex;align-items:center;justify-content:center;
+}

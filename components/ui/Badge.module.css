@@ -1,0 +1,11 @@
+.badge {
+  display: inline-block;
+  background: #ffedd5; /* light orange */
+  color: #92400e;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  margin-right: 8px;
+}
+
+.row { display:flex; gap:8px; align-items:center; margin:8px 0 12px 0 }
