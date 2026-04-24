@@ -1,11 +1,41 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import styles from './Header.module.css'
 
 interface HeaderProps {}
 
 const Header: React.FC<HeaderProps> = () => {
+  const [user, setUser] = useState<{ nickname?: string } | null>(null)
+
+  useEffect(() => {
+    const load = () => {
+      try {
+        const raw = localStorage.getItem('currentUser')
+        if (raw) setUser(JSON.parse(raw))
+        else setUser(null)
+      } catch {
+        setUser(null)
+      }
+    }
+    load()
+    window.addEventListener('storage', load)
+    window.addEventListener('authChange', load)
+    return () => {
+      window.removeEventListener('storage', load)
+      window.removeEventListener('authChange', load)
+    }
+  }, [])
+
+  const logout = () => {
+    localStorage.removeItem('currentUser')
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    if (typeof window !== 'undefined') delete window.__CURRENT_USER__
+    setUser(null)
+    window.location.hash = '#/'
+  }
+
   return (
-    <header className={styles.header}>
+    <header className={`${styles.header} w-full fixed top-0 left-0 z-50`}>
       <div className={styles.inner}>
         <div className={styles.content}>
           <div className={styles.left}>
@@ -35,7 +65,14 @@ const Header: React.FC<HeaderProps> = () => {
           </div>
 
           <div className={styles.right}>
-            <button className={styles.login}>Войти</button>
+            {user ? (
+              <div style={{display:'flex',alignItems:'center',gap:8}}>
+                <button className={styles.login} onClick={() => { window.location.hash = '#/account' }}>{user.nickname || 'Аккаунт'}</button>
+                <button className={styles.login} onClick={logout} style={{background:'#ef4444'}}>Выйти</button>
+              </div>
+            ) : (
+              <button className={styles.login} onClick={() => { window.location.hash = '#/login' }}>Войти</button>
+            )}
           </div>
         </div>
       </div>

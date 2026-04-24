@@ -14,6 +14,8 @@ export interface SessionCardProps {
   players?: number
   capacity?: number
   onApply?: () => void
+  id?: string
+  participants?: Array<{id: string; name: string; profileUrl?: string; avatar?: string}>
 }
 
 const SessionCard: React.FC<SessionCardProps> = ({
@@ -27,9 +29,27 @@ const SessionCard: React.FC<SessionCardProps> = ({
   players = 0,
   capacity = 6,
   onApply,
+  id,
+  participants = [],
 }) => {
+  const openDetail = () => {
+    try {
+      const sid = id || `${title.replace(/\s+/g, '-').toLowerCase()}-${Date.now()}`
+      // store session data globally for the simple router to pick up
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      window.__SESSIONS__ = window.__SESSIONS__ || {}
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      window.__SESSIONS__[sid] = { image, tags, title, date, duration, price, description, players, capacity, participants }
+      window.location.hash = `/session/${sid}`
+    } catch (e) {
+      console.error('openDetail error', e)
+    }
+  }
+
   return (
-    <article className={styles.card}>
+    <article className={styles.card} onClick={openDetail} role="button" tabIndex={0}>
       {image && (
         <img src={image} alt="cover" className={styles.image} />
       )}
@@ -58,7 +78,7 @@ const SessionCard: React.FC<SessionCardProps> = ({
 
       <div className={styles.footer}>
         <div className={styles.players}><Users size={16} /> {players} из {capacity}</div>
-        <button className={styles.apply} onClick={onApply}>Подать заявку</button>
+        <button className={styles.apply} onClick={(e) => { e.stopPropagation(); onApply && onApply() }}>Подать заявку</button>
       </div>
     </article>
   )

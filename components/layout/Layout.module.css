@@ -7,8 +7,9 @@
 }
 .main {
   flex: 1 0 auto;
-  padding: 24px 18px;
-  max-width: 1100px;
+  /* add top padding so content is not hidden behind the fixed header */
+  padding: 88px 18px 24px;
+
   margin: 0 auto;
 }
 
