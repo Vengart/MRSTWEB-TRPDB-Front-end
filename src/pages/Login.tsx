@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react'
 import { Mail, Lock, LogIn, UserPlus, ShieldAlert } from 'lucide-react'
 import styles from './Login.module.css'
 
-type User = { nickname: string; email: string; password: string; role: 'user' | 'admin'; avatar?: string; bio?: string; likes?: number; dislikes?: number }
+type User = { nickname: string; email: string; password: string; role: 'user' | 'admin'; avatar?: string; bio?: string; likedBy?: string[]; dislikedBy?: string[] }
 
 const SEED_USERS: Record<string, User> = {
-  vengart: { nickname: 'vengart', email: 'vengartium@gmail.com', password: '123123', role: 'user', avatar: 'https://www.gaydamak.com.ua/image/cache/catalog/image/catalog/products/Patchi--Shevrony--Nashivki/Nashivka-patch-shevron-Pepe-s-sizhkoj.webp', bio: 'Игрок и мастер по Pathfinder и D&D.', likes: 3, dislikes: 0 },
-  admin: { nickname: 'aR2Om', email: 'drunkcaydencai1ean@gmail.com', password: '123123', role: 'admin', avatar: 'https://cs13.pikabu.ru/post_img/2023/06/12/5/1686554492121677.jpg', bio: 'Организатор сессий и координатор.', likes: 5, dislikes: 1 }
+  vengart: { nickname: 'vengart', email: 'vengartium@gmail.com', password: '123123', role: 'user', avatar: 'https://www.gaydamak.com.ua/image/cache/catalog/image/catalog/products/Patchi--Shevrony--Nashivki/Nashivka-patch-shevron-Pepe-s-sizhkoj.webp', bio: 'Игрок и мастер по Pathfinder и D&D.', likedBy: [], dislikedBy: [] },
+  admin: { nickname: 'aR2Om', email: 'drunkcaydencai1ean@gmail.com', password: '123123', role: 'admin', avatar: 'https://cs13.pikabu.ru/post_img/2023/06/12/5/1686554492121677.jpg', bio: 'Организатор сессий и координатор.', likedBy: [], dislikedBy: [] }
 }
 
 const Login: React.FC = () => {
@@ -94,7 +94,7 @@ const Login: React.FC = () => {
           </label>
 
           <div className={styles.actions}>
-            <button type="submit" className={styles.primary} disabled={isSubmitting}>{isSubmitting ? 'Вход...' : 'Войти'}</button>
+            <button type="submit" onClick={() => handleLogin()} className={styles.primary} disabled={isSubmitting}>{isSubmitting ? 'Вход...' : 'Войти'}</button>
             <button type="button" onClick={() => { window.location.hash = '#/register' }} className={styles.secondary}>Регистрация</button>
           </div>
 

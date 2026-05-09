@@ -2,14 +2,12 @@
   display: flex;
   min-height: 100vh;
   flex-direction: column;
-  background: #ffffff;
-  color: #0f172a;
+  background: #0b1220;  /* ← было #ffffff */
+  color: #e6eef8;       /* ← было #0f172a */
 }
 .main {
   flex: 1 0 auto;
-  /* add top padding so content is not hidden behind the fixed header */
   padding: 88px 18px 24px;
-
   margin: 0 auto;
 }
 
@@ -26,5 +24,7 @@
   font-size: 28px;
   box-shadow: 0 8px 20px rgba(2,6,23,0.12);
   cursor: pointer;
-  display:flex;align-items:center;justify-content:center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

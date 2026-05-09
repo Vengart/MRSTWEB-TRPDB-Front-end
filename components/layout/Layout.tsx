@@ -13,9 +13,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <Header />
       <main className={styles.main}>{children}</main>
       <Footer />
-
-      <button className={styles.fab} aria-label="add">+
-      </button>
     </div>
   )
 }
