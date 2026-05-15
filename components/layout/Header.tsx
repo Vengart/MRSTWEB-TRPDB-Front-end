@@ -4,6 +4,7 @@ import styles from './Header.module.css'
 const Header: React.FC = () => {
   const [userName, setUserName] = useState<string | null>(null)
   const [isGamemaster, setIsGamemaster] = useState(false)
+  const currentRole = localStorage.getItem('role')
   const [game, setGame] = useState('')
   const [format, setFormat] = useState('')
   const [availability, setAvailability] = useState('')
@@ -101,13 +102,20 @@ const Header: React.FC = () => {
               <option value="Полные">Полные</option>
             </select>
           </div>
-
+              
           <div className={styles.right}>
             {userName ? (
               <>
-                {isGamemaster && (
+                {isGamemaster && currentRole !== '4' && (
                   <button className={styles.createBtn} onClick={() => { window.location.hash = '#/create-session' }}>
                     + Создать сессию
+                  </button>
+                )}
+                {currentRole === '4' && (
+                  <button className={styles.createBtn}
+                    onClick={() => { window.location.hash = '#/admin' }}
+                    style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', color: '#ef4444' }}>
+                    Админ панель
                   </button>
                 )}
                 <button className={styles.login} onClick={() => { window.location.hash = '#/account' }}>

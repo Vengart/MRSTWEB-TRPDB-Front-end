@@ -26,7 +26,38 @@ const Register: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ login: nick, password, email })
       })
+      if (res.ok) {
+        // Автоматически логинимся после регистрации
+        const loginRes = await fetch(`${BASE_URL}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ login: nick, password, email })
+        })
 
+       if (loginRes.ok) {
+          const data = await loginRes.json()
+          // Сохраняем данные сессии
+          localStorage.setItem('token', data.token)
+          localStorage.setItem('userId', String(data.userId))
+          localStorage.setItem('role', String(data.role))
+          
+          // Уведомляем другие компоненты (например, Header), что пользователь вошел
+          try { window.dispatchEvent(new Event('authChange')) } catch {}
+          
+          setStatus({ type: 'success', text: 'Регистрация успешна! Переходим на главную...' })
+          
+          // Всегда ведем на главную через небольшую паузу
+          setTimeout(() => { 
+              window.location.hash = '#/' 
+          }, 800)
+      } else {
+          // Если регистрация прошла, но авто-логин не сработал
+          setStatus({ type: 'error', text: 'Ошибка при входе. Попробуйте войти через форму логина.' })
+          setTimeout(() => { 
+              window.location.hash = '#/' 
+          }, 1500)
+      }
+      }
       if (!res.ok) {
         const err = await res.json()
         setStatus({ type: 'error', text: err.message || 'Пользователь уже существует' })
@@ -55,7 +86,7 @@ const Register: React.FC = () => {
               <input
                 value={nick}
                 onChange={(e) => setNick(e.target.value)}
-                placeholder="vengart"
+                placeholder="nickname"
                 className={styles.input}
               />
             </div>

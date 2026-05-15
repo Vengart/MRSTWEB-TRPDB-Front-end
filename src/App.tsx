@@ -8,6 +8,8 @@ import Register from './pages/Register'
 import Account from './pages/Account'
 import Profile from './pages/Profile'
 import CreateSession from './pages/CreateSession'
+import AdminPanel from './pages/AdminPanel'
+
 
 const BASE_URL = 'https://localhost:7214/api'
 const getToken = () => localStorage.getItem('token')
@@ -130,6 +132,7 @@ const App: React.FC = () => {
   if (route === '#/login') return <Layout><Login /></Layout>
   if (route === '#/register') return <Layout><Register /></Layout>
   if (route === '#/account') return <Layout><Account /></Layout>
+  if (route === '#/admin') {return <Layout><AdminPanel /></Layout>}
 
   if (route.startsWith('#/profile/')) {
     const id = route.replace('#/profile/', '')
