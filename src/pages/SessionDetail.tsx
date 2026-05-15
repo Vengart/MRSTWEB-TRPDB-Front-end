@@ -1,58 +1,160 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
-const SessionDetail: React.FC<{ id: string }> = ({ id }) => {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  const session = (typeof window !== 'undefined' && window.__SESSIONS__ && window.__SESSIONS__[id]) || null
+const BASE_URL = 'https://localhost:7214/api'
+const getToken = () => localStorage.getItem('token')
+const getCurrentUserId = () => localStorage.getItem('userId')
 
-  if (!session) {
-    return (
-      <div style={{ padding: 24 }}>
-        <h2>Сессия не найдена</h2>
-        <p>Данные сессии отсутствуют или срок хранения истёк.</p>
-        <p><a href="#/">Вернуться на главную</a></p>
-      </div>
-    )
+type Session = {
+  id: number
+  title: string
+  description?: string
+  system?: string
+  setting?: string
+  scheduledAt?: string
+  duration?: string
+  price?: string
+  coverImageUrl?: string
+  maxPlayers: number
+  status: number
+  gameMasterId: number
+  applications?: any[]
+}
+
+const SessionDetail: React.FC<{ id: string; onJoin: (id: string) => Promise<void> }> = ({ id, onJoin }) => {
+  const [session, setSession] = useState<Session | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [joining, setJoining] = useState(false)
+  const currentUserId = getCurrentUserId()
+
+  useEffect(() => {
+    const fetch_ = async () => {
+      setLoading(true)
+      try {
+        const res = await fetch(`${BASE_URL}/gamesessions/${id}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            ...(getToken() ? { Authorization: `Bearer ${getToken()}` } : {})
+          }
+        })
+        if (res.ok) setSession(await res.json())
+      } catch {}
+      setLoading(false)
+    }
+    fetch_()
+  }, [id])
+
+  if (loading) return (
+    <div style={{ padding: 24, color: '#475569' }}>Загрузка...</div>
+  )
+
+  if (!session) return (
+    <div style={{ padding: 24 }}>
+      <h2 style={{ color: '#e6eef8' }}>Сессия не найдена</h2>
+      <p style={{ color: '#475569' }}>Данные сессии отсутствуют.</p>
+      <a href="#/" style={{ color: '#10b981' }}>← Вернуться на главную</a>
+    </div>
+  )
+
+  const players = session.applications?.length || 0
+  const isOwner = String(session.gameMasterId) === currentUserId
+  const isFull = players >= session.maxPlayers
+  const tags = [session.system, session.setting].filter(Boolean)
+
+  const handleJoin = async () => {
+    setJoining(true)
+    await onJoin(String(session.id))
+    setJoining(false)
   }
-
-  const { image, title, tags = [], date, duration, price, description, players, capacity, participants = [] } = session
 
   return (
     <div style={{ maxWidth: 900, margin: '24px auto', padding: '0 16px' }}>
-      <div style={{ display: 'flex', gap: 20 }}>
-        {image && <img src={image} alt="cover" style={{ width: 320, height: 220, objectFit: 'cover', borderRadius: 12 }} />}
-        <div>
-          <h1 style={{ margin: 0 }}>{title}</h1>
+
+      {/* Шапка */}
+      <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
+        {session.coverImageUrl && (
+          <img src={session.coverImageUrl} alt="cover"
+            style={{ width: 320, height: 220, objectFit: 'cover', borderRadius: 12 }} />
+        )}
+        <div style={{ flex: 1 }}>
+          <h1 style={{ margin: 0, color: '#e6eef8', fontSize: 28, fontWeight: 900 }}>{session.title}</h1>
           <div style={{ color: '#64748b', marginTop: 8 }}>{tags.join(' • ')}</div>
-          <div style={{ marginTop: 12, color: '#475569' }}>{date} · {duration} · {price}</div>
+          <div style={{ marginTop: 12, color: '#475569', fontSize: 14 }}>
+            {session.scheduledAt && <span>{new Date(session.scheduledAt).toLocaleDateString('ru-RU')} · </span>}
+            {session.duration && <span>{session.duration} · </span>}
+            {session.price && <span>{session.price}</span>}
+          </div>
+
+          {/* Прогресс мест */}
+          <div style={{ marginTop: 16 }}>
+            <div style={{ fontSize: 13, color: '#475569', marginBottom: 6 }}>
+              Участников: {players} / {session.maxPlayers}
+            </div>
+            <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: 999, height: 6, width: 200 }}>
+              <div style={{ background: '#10b981', borderRadius: 999, height: 6, width: `${Math.min((players / session.maxPlayers) * 100, 100)}%` }} />
+            </div>
+          </div>
+
+          {/* Кнопка записи */}
+          {!isOwner && (
+            <button
+              onClick={handleJoin}
+              disabled={isFull || joining}
+              style={{
+                marginTop: 20, padding: '10px 24px', borderRadius: 8, border: 'none',
+                background: isFull ? 'rgba(255,255,255,0.05)' : 'linear-gradient(180deg,#10b981,#059669)',
+                color: isFull ? '#334155' : 'white', fontSize: 14, fontWeight: 600,
+                cursor: isFull ? 'not-allowed' : 'pointer', fontFamily: 'inherit'
+              }}
+            >
+              {joining ? 'Отправка...' : isFull ? 'Сессия заполнена' : 'Подать заявку'}
+            </button>
+          )}
+          {isOwner && (
+            <div style={{ marginTop: 20, fontSize: 13, color: '#10b981' }}>
+              Вы — Гейммастер этой сессии
+            </div>
+          )}
         </div>
       </div>
 
-      <section style={{ marginTop: 20 }}>
-        <h3>Описание</h3>
-        <p style={{ color: '#334155' }}>{description}</p>
-      </section>
+      {/* Описание */}
+      {session.description && (
+        <section style={{ marginTop: 24 }}>
+          <h3 style={{ color: '#e6eef8', fontWeight: 700, marginBottom: 8 }}>Описание</h3>
+          <p style={{ color: '#475569', lineHeight: 1.7 }}>{session.description}</p>
+        </section>
+      )}
 
-      <section style={{ marginTop: 20 }}>
-        <h3>Участники ({players} / {capacity})</h3>
-        {participants.length === 0 ? (
+      {/* Участники */}
+      <section style={{ marginTop: 24 }}>
+        <h3 style={{ color: '#e6eef8', fontWeight: 700, marginBottom: 8 }}>
+          Заявки ({players})
+        </h3>
+        {players === 0 ? (
           <p style={{ color: '#64748b' }}>Пока никто не записан. Будьте первым!</p>
         ) : (
-          <ul style={{ listStyle: 'none', padding: 0 }}>
-            {participants.map((p: any) => (
-              <li key={p.id} style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 12 }}>
-                {p.avatar ? <img src={p.avatar} alt="avatar" style={{ width: 40, height: 40, borderRadius: 999 }} /> : <div style={{ width: 40, height: 40, borderRadius: 999, background: '#e2e8f0' }} />}
-                <div>
-                  <div style={{ fontWeight: 600 }}>{p.name}</div>
-                  <a href={`#/profile/${p.id}`}>Просмотреть профиль</a>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {session.applications?.map((a: any) => (
+              <div key={a.id} style={{ display: 'flex', gap: 12, alignItems: 'center', background: '#0f172a', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10, padding: '10px 14px' }}>
+                <div style={{ width: 36, height: 36, borderRadius: 999, background: '#1e293b', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#475569', fontSize: 13 }}>
+                  {a.playerId}
                 </div>
-              </li>
+                <div>
+                  <div style={{ fontSize: 13, color: '#e6eef8' }}>Игрок #{a.playerId}</div>
+                  <div style={{ fontSize: 12, color: a.status === 1 ? '#10b981' : a.status === 2 ? '#ef4444' : '#475569' }}>
+                    {a.status === 1 ? 'Одобрен' : a.status === 2 ? 'Отклонён' : 'На рассмотрении'}
+                  </div>
+                  {a.message && <div style={{ fontSize: 12, color: '#334155', marginTop: 2 }}>{a.message}</div>}
+                </div>
+              </div>
             ))}
-          </ul>
+          </div>
         )}
       </section>
 
-      <p style={{ marginTop: 24 }}><a href="#/">← Вернуться</a></p>
+      <p style={{ marginTop: 24 }}>
+        <a href="#/" style={{ color: '#10b981', fontSize: 14 }}>← Вернуться</a>
+      </p>
     </div>
   )
 }

@@ -61,6 +61,8 @@ const Account: React.FC = () => {
   const fileRef = useRef<HTMLInputElement | null>(null)
   const [oldPassword, setOldPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
+  const [role, setRole] = useState<number>(user?.role || 1)
+
 
   useEffect(() => {
     const id = getCurrentUserId()
@@ -81,6 +83,7 @@ const Account: React.FC = () => {
         setAvatar(data.avatarUrl || '')
         setFirstName(data.firstName || '')
         setLastName(data.lastName || '')
+        setRole(data.role || 1)
       })
       .catch(() => {})
       .finally(() => setLoading(false))
@@ -97,6 +100,8 @@ const Account: React.FC = () => {
   if (firstName) body.firstName = firstName
   if (lastName) body.lastName = lastName
   if (newPassword) body.password = newPassword
+  if (role) body.role = role
+  
 
   try {
     const res = await fetch(`${BASE_URL}/users/${user.id}`, {
@@ -111,6 +116,9 @@ const Account: React.FC = () => {
       setStatus('Сохранено!')
       setTimeout(() => setStatus(null), 2000)
       try { window.dispatchEvent(new Event('authChange')) } catch {}
+      localStorage.setItem('role', String(role))
+      try { window.dispatchEvent(new Event('authChange')) } catch {}
+
     } else {
       setStatus('Ошибка сохранения')
       setTimeout(() => setStatus(null), 2000)
@@ -228,6 +236,27 @@ const Account: React.FC = () => {
               onBlur={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'} />
           </div>
 
+          <div style={s.field}>
+            <label style={s.label}>Игровая роль</label>
+            <div style={s.roles}>
+              <button
+                style={roleBtnStyle(role === 1)}
+                onClick={() => setRole(1)}
+                type="button"
+              >
+                {role === 1 && <CheckCircle size={14} />}
+                Игрок
+              </button>
+              <button
+                style={roleBtnStyle(role === 2)}
+                onClick={() => setRole(2)}
+                type="button"
+              >
+                {role === 2 && <CheckCircle size={14} />}
+                Геймастер
+              </button>
+            </div>
+          </div>
 
           <div style={s.actions}>
             <button style={{ flex: 2, padding: '10px 16px', borderRadius: '8px', border: status ? '1px solid rgba(16,185,129,0.4)' : 'none', background: status ? 'rgba(16,185,129,0.1)' : 'linear-gradient(180deg,#10b981,#059669)', color: status ? '#10b981' : 'white', fontSize: '14px', fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontFamily: 'inherit' }}
