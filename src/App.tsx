@@ -1,3 +1,4 @@
+import SessionNotes from './pages/SessionNotes'
 import React, { useEffect, useState } from 'react'
 import { Layout } from '../components/layout'
 import { SessionCard } from '../components/ui'
@@ -134,6 +135,11 @@ const App: React.FC = () => {
     const id = route.replace('#/profile/', '')
     return <Layout><Profile id={id} /></Layout>
   }
+  if (route.startsWith('#/session/') && route.includes('/notes')) {
+    const sessionId = route.replace('#/session/', '').replace('/notes', '')
+    return <Layout><SessionNotes sessionId={sessionId} /></Layout>
+  }
+
 
   if (route.startsWith('#/session/')) {
     const id = route.replace('#/session/', '')
@@ -151,6 +157,7 @@ const App: React.FC = () => {
       </Layout>
     )
   }
+  
 
   const filtered = sessions.filter(s => {
     const tags = [s.system, s.setting].filter(Boolean)
@@ -180,7 +187,12 @@ const App: React.FC = () => {
         {loading ? (
           <div style={{ color: '#475569' }}>Загрузка...</div>
         ) : (
-          <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '24px' }}>
+
+          <section style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: '30px',
+            }}>
             {filtered.map(s => (
               <SessionCard
                 key={s.id}

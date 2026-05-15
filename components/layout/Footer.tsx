@@ -7,7 +7,7 @@ const Footer: React.FC<FooterProps> = () => {
   return (
     <footer className={styles.footer}>
       <div className={styles.container}>
-        <span>Какой то текст для первого концепта</span>
+        <span>Приятной игры!</span>
       </div>
     </footer>
   )

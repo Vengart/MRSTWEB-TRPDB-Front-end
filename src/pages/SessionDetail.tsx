@@ -25,6 +25,19 @@ const SessionDetail: React.FC<{ id: string; onJoin: (id: string) => Promise<void
   const [loading, setLoading] = useState(true)
   const [joining, setJoining] = useState(false)
   const currentUserId = getCurrentUserId()
+ type Note = {
+    id: number
+    header: string
+    bodyText: string
+    isVisibleToPlayers: boolean
+    authorId: number
+  }
+
+  const [notes, setNotes] = useState<Note[]>([])
+  const [noteHeader, setNoteHeader] = useState('')
+  const [noteBody, setNoteBody] = useState('')
+  const [notePublic, setNotePublic] = useState(false)
+  const [cardId, setCardId] = useState<number | null>(null)
 
   useEffect(() => {
     const fetch_ = async () => {
@@ -36,7 +49,17 @@ const SessionDetail: React.FC<{ id: string; onJoin: (id: string) => Promise<void
             ...(getToken() ? { Authorization: `Bearer ${getToken()}` } : {})
           }
         })
-        if (res.ok) setSession(await res.json())
+        if (res.ok) {
+          const data = await res.json()
+          setSession(data)
+          if (data.gameCardId) {
+            setCardId(data.gameCardId)
+            const notesRes = await fetch(`${BASE_URL}/gamenotes/card/${data.gameCardId}`, {
+              headers: { Authorization: `Bearer ${getToken()}` }
+            })
+            if (notesRes.ok) setNotes(await notesRes.json())
+          }
+        }
       } catch {}
       setLoading(false)
     }
@@ -54,11 +77,20 @@ const SessionDetail: React.FC<{ id: string; onJoin: (id: string) => Promise<void
       <a href="#/" style={{ color: '#10b981' }}>← Вернуться на главную</a>
     </div>
   )
-
+ 
   const players = session.applications?.length || 0
   const isOwner = String(session.gameMasterId) === currentUserId
   const isFull = players >= session.maxPlayers
   const tags = [session.system, session.setting].filter(Boolean)
+
+  const currentRole = localStorage.getItem('role')
+  const isParticipant = session.applications?.some(
+    (a: any) => String(a.playerId) === currentUserId
+  )
+  const canSeeNotes = isOwner ||
+    currentRole === '3' ||
+    currentRole === '4' ||
+    isParticipant
 
   const handleJoin = async () => {
     setJoining(true)
@@ -151,7 +183,12 @@ const SessionDetail: React.FC<{ id: string; onJoin: (id: string) => Promise<void
           </div>
         )}
       </section>
-
+        {canSeeNotes && (
+          <a href={`#/session/${session.id}/notes`}
+            style={{ display: 'inline-block', marginTop: 24, padding: '9px 20px', borderRadius: 8, background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)', color: '#10b981', fontSize: 14, textDecoration: 'none' }}>
+            📝 Открыть заметки сессии
+          </a>
+        )}
       <p style={{ marginTop: 24 }}>
         <a href="#/" style={{ color: '#10b981', fontSize: 14 }}>← Вернуться</a>
       </p>
