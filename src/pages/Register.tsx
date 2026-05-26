@@ -130,7 +130,7 @@ const Register: React.FC = () => {
           </div>
 
           {status && (
-            <div className={styles.message} style={{ color: status.type === 'success' ? '#059669' : '#ef4444' }}>
+            <div className={styles.message} style={{ color: status.type === 'success' ? 'var(--green)' : '#ef4444' }}>
               {status.text}
             </div>
           )}

@@ -1,5 +1,5 @@
 .card {
-  border: 1px solid #e6eef8;
+  border: 1px solid var(--text-primary);
   border-radius: 8px;
   padding: 12px;
   background: #fff;
@@ -14,7 +14,7 @@
 }
 .description {
   margin: 0;
-  color: #475569;
+  color: var(--text-secondary);
   font-size: 14px;
 }
 .footer {

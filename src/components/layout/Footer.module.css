@@ -1,0 +1,15 @@
+.footer {
+  background: var(--bg-deep);
+  border-top: 1px solid var(--border);
+  padding: 20px 32px;
+}
+
+.container {
+  max-width: 1240px;
+  margin: 0 auto;
+  text-align: center;
+  font-size: 13px;
+  font-family: var(--font-body);
+  color: var(--text-secondary);
+  letter-spacing: 0.03em;
+}

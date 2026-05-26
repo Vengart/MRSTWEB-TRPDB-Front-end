@@ -3,13 +3,13 @@ import Calendar from 'react-calendar'
 import 'react-calendar/dist/Calendar.css'
 
 const calendarStyles = `
-  .react-calendar { background: #0f172a; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; font-family: inherit; color: #e6eef8; width: 100%; border: none; }
+  .react-calendar { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; font-family: inherit; color: var(--text-primary); width: 100%; border: none; }
   .react-calendar__tile { border-radius: 6px; padding: 10px; font-size: 13px; }
   .react-calendar__tile:enabled:hover { background: #1e293b; }
-  .react-calendar__tile--now { background: rgba(16,185,129,0.1); border: 1px solid #10b981; }
-  .date-match { background: #10b981 !important; color: white !important; font-weight: bold; }
+  .react-calendar__tile--now { background: rgba(74,124,89,0.1); border: 1px solid var(--green); }
+  .date-match { background: var(--green) !important; color: white !important; font-weight: bold; }
   .date-partial { background: #ef4444 !important; color: white !important; opacity: 0.7; }
-  .react-calendar__navigation button { color: #e6eef8; font-size: 14px; }
+  .react-calendar__navigation button { color: var(--text-primary); font-size: 14px; }
 `;
 
 const BASE_URL = 'https://localhost:7214/api'
@@ -92,7 +92,6 @@ const SessionDetail: React.FC<{ id: string; onJoin: (id: string) => Promise<void
     if (res.ok) window.location.hash = '#/'
   }
   const currentUserId = getCurrentUserId()
-  const currentRole = localStorage.getItem('role')
 
   useEffect(() => {
     const fetch_ = async () => {
@@ -149,10 +148,19 @@ const SessionDetail: React.FC<{ id: string; onJoin: (id: string) => Promise<void
     setJoining(false)
   }
 
-  const isOwner = String(session?.gameMasterId) === currentUserId
-  const isParticipant = session?.applications?.some((a: any) => String(a.playerId) === currentUserId && a.status === 1)
-  const players = session?.applications?.length || 0
-  const isFull = players >= (session?.maxPlayers || 0)
+if (loading) return <div style={{ padding: 24, color: 'var(--text-secondary)' }}>Загрузка...</div>
+if (!session) return <div style={{ padding: 24 }}><h2>Сессия не найдена</h2></div>
+
+  const players = session.applications?.length || 0
+  const isOwner = String(session.gameMasterId) === currentUserId
+  const isParticipant = session.applications?.some(
+    (a: any) => String(a.playerId) === currentUserId && a.status === 1
+  )
+  const isFull = players >= session.maxPlayers
+  const tags = [session.system, session.setting].filter(Boolean)
+  const currentRole = localStorage.getItem('role')
+  const canSeeNotes = isOwner || currentRole === '3' || currentRole === '4' || isParticipant
+
   const canInteractWithCalendar = isOwner || isParticipant
 
   const getTileClassName = ({ date, view }: { date: Date, view: string }) => {
@@ -164,8 +172,8 @@ const SessionDetail: React.FC<{ id: string; onJoin: (id: string) => Promise<void
     return slotsOnDay.length >= totalParticipants ? 'date-match' : 'date-partial';
   };
 
-  if (loading) return <div style={{ padding: 24, color: '#475569' }}>Загрузка...</div>
-  if (!session) return <div style={{ padding: 24 }}><h2 style={{ color: '#e6eef8' }}>Сессия не найдена</h2></div>
+  if (loading) return <div style={{ padding: 24, color: 'var(--text-secondary)' }}>Загрузка...</div>
+  if (!session) return <div style={{ padding: 24 }}><h2 style={{ color: 'var(--text-primary)' }}>Сессия не найдена</h2></div>
 
   const handleApplicationAction = async (applicationId: number, newStatus: number) => {
     try {
@@ -190,12 +198,12 @@ const SessionDetail: React.FC<{ id: string; onJoin: (id: string) => Promise<void
     }
   };
   const inpStyle: React.CSSProperties = {
-    background: '#0b1220', border: '1px solid rgba(255,255,255,0.08)',
+    background: 'var(--bg-input)', border: '1px solid rgba(255,255,255,0.08)',
     borderRadius: 8, padding: '10px 14px', fontSize: 14,
-    color: '#e6eef8', outline: 'none', fontFamily: 'inherit', width: '100%', boxSizing: 'border-box'
+    color: 'var(--text-primary)', outline: 'none', fontFamily: 'inherit', width: '100%', boxSizing: 'border-box'
   }
   const lblStyle: React.CSSProperties = {
-    fontSize: 11, fontWeight: 500, color: '#475569',
+    fontSize: 11, fontWeight: 500, color: 'var(--text-secondary)',
     textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 6
   }
   return (
@@ -211,8 +219,8 @@ const SessionDetail: React.FC<{ id: string; onJoin: (id: string) => Promise<void
 {/* Модалка редактирования */}
 {editMode && (
   <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-    <div style={{ background: '#0f172a', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: 32, width: '100%', maxWidth: 560, maxHeight: '90vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 16 }}>
-      <h2 style={{ color: '#e6eef8', margin: 0, fontSize: 20, fontWeight: 700 }}>Редактировать сессию</h2>
+    <div style={{ background: 'var(--bg-card)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: 32, width: '100%', maxWidth: 560, maxHeight: '90vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <h2 style={{ color: 'var(--text-primary)', margin: 0, fontSize: 20, fontWeight: 700 }}>Редактировать сессию</h2>
 
       <div>
         <label style={lblStyle}>Название</label>
@@ -264,10 +272,10 @@ const SessionDetail: React.FC<{ id: string; onJoin: (id: string) => Promise<void
       </div>
 
       <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
-        <button onClick={saveEdit} style={{ flex: 2, padding: '10px', borderRadius: 8, border: 'none', background: 'linear-gradient(180deg,#10b981,#059669)', color: 'white', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
+        <button onClick={saveEdit} style={{ flex: 2, padding: '10px', borderRadius: 8, border: 'none', background: 'linear-gradient(180deg,var(--green),var(--green))', color: 'white', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
           Сохранить
         </button>
-        <button onClick={() => setEditMode(false)} style={{ flex: 1, padding: '10px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.08)', background: 'transparent', color: '#475569', fontSize: 14, cursor: 'pointer', fontFamily: 'inherit' }}>
+        <button onClick={() => setEditMode(false)} style={{ flex: 1, padding: '10px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.08)', background: 'transparent', color: 'var(--text-secondary)', fontSize: 14, cursor: 'pointer', fontFamily: 'inherit' }}>
           Отмена
         </button>
       </div>
@@ -282,95 +290,96 @@ const SessionDetail: React.FC<{ id: string; onJoin: (id: string) => Promise<void
         flexDirection: 'column'
       }}>
         <div style={{ flex: 1 }}>
-          <div 
+          <div
             onClick={handleJoin}
-            style={{ 
-              position: 'relative', 
+            style={{
+              position: 'relative',
               cursor: (!isOwner && !isParticipant && !isFull) ? 'pointer' : 'default',
-              overflow: 'hidden',
-              borderRadius: 16,
-              marginBottom: 24
+              overflow: 'hidden', borderRadius: 16, marginBottom: 24
             }}
           >
             {session.coverImageUrl && (
-              <img 
-                src={session.coverImageUrl} 
-                alt="cover" 
-                style={{ 
-                  width: '100%', 
-                  height: 400, // Фиксируем высоту, чтобы не скроллить вечность
-                  objectFit: 'cover', 
-                  borderRadius: 16,
-                  boxShadow: '0 10px 30px rgba(0,0,0,0.3)' // Добавит глубины на темном фоне
-                }} 
-              />
+              <img src={session.coverImageUrl} alt="cover"
+                style={{ width: '100%', height: 400, objectFit: 'cover', borderRadius: 16, boxShadow: '0 10px 30px rgba(0,0,0,0.3)' }} />
             )}
             {!isOwner && !isParticipant && !isFull && (
-              <div style={{ position: 'absolute', bottom: 16, right: 16, background: 'rgba(16,185,129,0.9)', color: 'white', padding: '8px 16px', borderRadius: 8, fontSize: 12, fontWeight: 700 }}>
+              <div style={{ position: 'absolute', bottom: 16, right: 16, background: 'rgba(74,124,89,0.9)', color: 'white', padding: '8px 16px', borderRadius: 8, fontSize: 12, fontWeight: 700 }}>
                 Нажми на фото, чтобы записаться
               </div>
             )}
           </div>
 
-          <h1 style={{ margin: '0 0 8px', color: '#e6eef8', fontSize: 32, fontWeight: 900 }}>{session.title}</h1>
-          <div style={{ color: '#64748b', marginBottom: 20 }}>{session.system} • {session.setting}</div>
+          <h1 style={{ margin: '0 0 8px', color: 'var(--text-primary)', fontSize: 32, fontWeight: 900 }}>{session.title}</h1>
+
+          {/* Используем tags */}
+          <div style={{ color: 'var(--text-secondary)', marginBottom: 20, display: 'flex', gap: 8 }}>
+            {tags.map(t => (
+              <span key={t} style={{ padding: '3px 12px', borderRadius: 999, fontSize: 12, fontWeight: 600, background: 'var(--green-dim)', color: 'var(--green-light)', border: '1px solid var(--green-border)' }}>{t}</span>
+            ))}
+          </div>
 
           <section style={{ marginBottom: 32 }}>
-            <h3 style={{ color: '#e6eef8', fontSize: 18, marginBottom: 12 }}>Описание</h3>
-            <p style={{ color: '#94a3b8', lineHeight: 1.8, fontSize: 15 }}>{session.description}</p>
+            <h3 style={{ color: 'var(--text-primary)', fontSize: 18, marginBottom: 12 }}>Описание</h3>
+            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.8, fontSize: 15 }}>{session.description}</p>
           </section>
 
-          <section>
-            <h3 style={{ color: '#e6eef8', fontSize: 18, marginBottom: 16 }}>Участники ({players}/{session.maxPlayers})</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
-              {/* СЕКЦИЯ ГМ: Управление заявками */}
-                {isOwner && session.applications?.some((a: any) => a.status === 0) && (
-                  <section style={{ marginTop: 40, padding: 24, background: 'rgba(16,185,129,0.05)', borderRadius: 16, border: '1px solid rgba(16,185,129,0.2)' }}>
-                    <h3 style={{ color: '#10b981', fontSize: 20, margin: '0 0 20px' }}>📩 Новые заявки на игру</h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                      {session.applications?.filter((a: any) => a.status === 0).map((app: any) => (
-                        <div key={app.id} style={{ 
-                          display: 'flex', 
-                          justifyContent: 'space-between', 
-                          alignItems: 'center', 
-                          background: '#0f172a', 
-                          padding: '16px 20px', 
-                          borderRadius: 12,
-                          border: '1px solid rgba(255,255,255,0.06)'
-                        }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                            <div style={{ width: 44, height: 44, borderRadius: 10, background: '#1e293b', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b' }}>
-                              👤
-                            </div>
-                            <div>
-                              <div style={{ color: '#e6eef8', fontWeight: 600 }}>Игрок #{app.playerId}</div>
-                              <a href={`#/profile/${app.playerId}`} style={{ color: '#3b82f6', fontSize: 12, textDecoration: 'none' }}>
-                                Посмотреть профиль →
-                              </a>
-                            </div>
-                          </div>
-                          
-                          <div style={{ display: 'flex', gap: 10 }}>
-                            <button 
-                              onClick={() => handleApplicationAction(app.id, 1)} // 1 - Принять
-                              style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: '#10b981', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
-                            >
-                              Принять
-                            </button>
-                            <button 
-                              onClick={() => handleApplicationAction(app.id, 2)} // 2 - Отклонить
-                              style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid #ef4444', background: 'transparent', color: '#ef4444', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
-                            >
-                              Отклонить
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </section>
-                )}
+          {/* Участники */}
+          <section style={{ marginBottom: 32 }}>
+            <h3 style={{ color: 'var(--text-primary)', fontSize: 18, marginBottom: 16 }}>
+              Участники ({session.applications?.filter((a: any) => a.status === 1).length || 0} / {session.maxPlayers})
+            </h3>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
+              {session.applications?.filter((a: any) => a.status === 1).map((a: any) => (
+                <a key={a.id} href={`#/profile/${a.playerId}`}
+                  style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', padding: '10px 14px', textDecoration: 'none', transition: 'all 0.15s' }}
+                  onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--border-hover)'}
+                  onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}>
+                  <div style={{ width: 36, height: 36, borderRadius: '50%', overflow: 'hidden', background: 'var(--bg-input)', border: '2px solid var(--border-green)', flexShrink: 0 }}>
+                    {a.player?.avatarUrl
+                      ? <img src={a.player.avatarUrl} alt={a.player.userName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-dim)', fontSize: 14 }}>👤</div>}
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>{a.player?.userName || `Игрок #${a.playerId}`}</div>
+                    {a.player?.bio && <div style={{ fontSize: 12, color: 'var(--text-secondary)', fontStyle: 'italic' }}>{a.player.bio.slice(0, 40)}</div>}
+                  </div>
+                </a>
+              ))}
+              {(!session.applications || session.applications.filter((a: any) => a.status === 1).length === 0) && (
+                <p style={{ color: 'var(--text-dim)', fontSize: 14, fontStyle: 'italic' }}>Пока никто не принят в игру</p>
+              )}
             </div>
           </section>
+
+          {/* Заявки для GM */}
+          {isOwner && session.applications?.some((a: any) => a.status === 0) && (
+            <section style={{ padding: 24, background: 'var(--green-dim)', borderRadius: 16, border: '1px solid var(--green-border)' }}>
+              <h3 style={{ color: 'var(--green-light)', fontSize: 18, margin: '0 0 16px' }}>📩 Новые заявки</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {session.applications?.filter((a: any) => a.status === 0).map((app: any) => (
+                  <div key={app.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-card)', padding: '14px 18px', borderRadius: 12, border: '1px solid var(--border)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                      <div style={{ width: 40, height: 40, borderRadius: 10, background: 'var(--bg-input)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-dim)' }}>👤</div>
+                      <div>
+                        <div style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{app.player?.userName || `Игрок #${app.playerId}`}</div>
+                        <a href={`#/profile/${app.playerId}`} style={{ color: 'var(--green-light)', fontSize: 12 }}>Посмотреть профиль →</a>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', gap: 10 }}>
+                      <button onClick={() => handleApplicationAction(app.id, 1)}
+                        style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: 'var(--green)', color: 'white', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                        Принять
+                      </button>
+                      <button onClick={() => handleApplicationAction(app.id, 2)}
+                        style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid var(--error)', background: 'transparent', color: 'var(--error)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                        Отклонить
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
         </div>
 
       </div>
@@ -394,29 +403,29 @@ const SessionDetail: React.FC<{ id: string; onJoin: (id: string) => Promise<void
         <div style={{ width: 320, position: 'sticky', top: 24, display: 'flex', flexDirection: 'column', gap: 20 }}>
           
           {/* Блок управления/записи */}
-          <div style={{ background: '#0f172a', padding: 20, borderRadius: 16, border: '1px solid rgba(255,255,255,0.06)' }}>
+          <div style={{ background: 'var(--bg-card)', padding: 20, borderRadius: 16, border: '1px solid var(--border)' }}>
             <div style={{ marginBottom: 16 }}>
-              <div style={{ fontSize: 20, fontWeight: 800, color: '#e6eef8' }}>{session.price || 'Бесплатно'}</div>
-              <div style={{ fontSize: 12, color: '#475569' }}>Стоимость участия</div>
+              <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)' }}>{session.price || 'Бесплатно'}</div>
+              <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Стоимость участия</div>
             </div>
             
             {!isOwner && !isParticipant && (
               <button 
                 onClick={handleJoin} 
                 disabled={isFull || joining}
-                style={{ width: '100%', padding: '12px', borderRadius: 10, border: 'none', background: isFull ? '#1e293b' : 'linear-gradient(180deg,#10b981,#059669)', color: isFull ? '#475569' : 'white', fontWeight: 700, cursor: isFull ? 'not-allowed' : 'pointer' }}
+                style={{ width: '100%', padding: '12px', borderRadius: 10, border: 'none', background: isFull ? '#1e293b' : 'linear-gradient(180deg,var(--green),var(--green))', color: isFull ? 'var(--text-secondary)' : 'white', fontWeight: 700, cursor: isFull ? 'not-allowed' : 'pointer' }}
               >
                 {joining ? 'Запись...' : isFull ? 'Мест нет' : 'Подать заявку'}
               </button>
             )}
             
-            {/* {isOwner && <div style={{ color: '#10b981', fontSize: 13, textAlign: 'center', fontWeight: 600 }}>Вы — Гейммастер</div>}
-            {isParticipant && <div style={{ color: '#10b981', fontSize: 13, textAlign: 'center', fontWeight: 600 }}>Вы участвуете в сессии</div>} */}
+            {/* {isOwner && <div style={{ color: 'var(--green)', fontSize: 13, textAlign: 'center', fontWeight: 600 }}>Вы — Гейммастер</div>}
+            {isParticipant && <div style={{ color: 'var(--green)', fontSize: 13, textAlign: 'center', fontWeight: 600 }}>Вы участвуете в сессии</div>} */}
           </div>
           {/* Кнопки управления для GM */}
           {isOwner && (
             <button onClick={openEdit}
-              style={{ width: '100%', marginTop: 8, padding: '10px', borderRadius: 8, border: '1px solid rgba(16,185,129,0.3)', background: 'transparent', color: '#10b981', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
+              style={{ width: '100%', marginTop: 8, padding: '10px', borderRadius: 8, border: '1px solid rgba(74,124,89,0.3)', background: 'transparent', color: 'var(--green)', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
               ✏️ Редактировать сессию
             </button>
           )}
@@ -430,8 +439,8 @@ const SessionDetail: React.FC<{ id: string; onJoin: (id: string) => Promise<void
           )}
           {/* Блок Календаря */}
           {canInteractWithCalendar && (
-            <div style={{ background: '#0f172a', padding: 20, borderRadius: 16, border: '1px solid rgba(255,255,255,0.06)' }}>
-              <h4 style={{ color: '#e6eef8', margin: '0 0 16px', fontSize: 15 }}>Сбор группы</h4>
+            <div style={{ background: 'var(--bg-card)', padding: 20, borderRadius: 16, border: '1px solid var(--border)' }}>
+              <h4 style={{ color: 'var(--text-primary)', margin: '0 0 16px', fontSize: 15 }}>Сбор группы</h4>
               <Calendar 
                 onChange={(val) => {
                   const date = Array.isArray(val) ? val[0] : val;
@@ -441,16 +450,14 @@ const SessionDetail: React.FC<{ id: string; onJoin: (id: string) => Promise<void
                 tileClassName={getTileClassName as any}
               />
               <div style={{ marginTop: 16, display: 'flex', gap: 8 }}>
-                <input type="time" value={myTime.start} onChange={e => setMyTime({...myTime, start: e.target.value})} style={{ flex: 1, background: '#0b1220', border: '1px solid #1e293b', color: 'white', padding: '6px', borderRadius: 6, fontSize: 12 }} />
-                <input type="time" value={myTime.end} onChange={e => setMyTime({...myTime, end: e.target.value})} style={{ flex: 1, background: '#0b1220', border: '1px solid #1e293b', color: 'white', padding: '6px', borderRadius: 6, fontSize: 12 }} />
+                <input type="time" value={myTime.start} onChange={e => setMyTime({...myTime, start: e.target.value})} style={{ flex: 1, background: 'var(--bg-input)', border: '1px solid #1e293b', color: 'white', padding: '6px', borderRadius: 6, fontSize: 12 }} />
+                <input type="time" value={myTime.end} onChange={e => setMyTime({...myTime, end: e.target.value})} style={{ flex: 1, background: 'var(--bg-input)', border: '1px solid #1e293b', color: 'white', padding: '6px', borderRadius: 6, fontSize: 12 }} />
               </div>
-              <button onClick={saveMyTime} style={{ width: '100%', marginTop: 12, padding: '8px', borderRadius: 8, border: 'none', background: 'rgba(16,185,129,0.1)', color: '#10b981', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
+              <button onClick={saveMyTime} style={{ width: '100%', marginTop: 12, padding: '8px', borderRadius: 8, border: 'none', background: 'rgba(74,124,89,0.1)', color: 'var(--green)', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
                 Отметить время
               </button>
             </div>
           )}
-
-          {/* Блок Заметок (теперь под календарем) */}
           {(isOwner || isParticipant || currentRole === '3' || currentRole === '4') && (
             <a 
               href={`#/session/${session.id}/notes`}
@@ -461,15 +468,20 @@ const SessionDetail: React.FC<{ id: string; onJoin: (id: string) => Promise<void
                 gap: 10,
                 padding: '16px', 
                 borderRadius: 16, 
-                background: '#0f172a', 
-                border: '1px solid rgba(16,185,129,0.2)', 
-                color: '#10b981', 
+                background: 'var(--bg-card)', 
+                border: '1px solid rgba(74,124,89,0.2)', 
+                color: 'var(--green)', 
                 fontSize: 14, 
                 textDecoration: 'none',
                 fontWeight: 600
               }}
             >
-              📝 Заметки сессии
+             {canSeeNotes && (
+                <a href={`#/session/${session.id}/notes`}
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, padding: 16, borderRadius: 16, background: 'var(--bg-card)', border: '1px solid var(--border-green)', color: 'var(--green-light)', fontSize: 14, textDecoration: 'none', fontWeight: 600 }}>
+                  📝 Заметки сессии
+                </a>
+              )}
             </a>
           )}
         </div>

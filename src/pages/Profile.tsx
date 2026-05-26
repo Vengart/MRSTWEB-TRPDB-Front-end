@@ -18,18 +18,18 @@ const getToken = () => localStorage.getItem('token')
 const getCurrentUserId = () => localStorage.getItem('userId')
 
 const inp: React.CSSProperties = {
-  background: '#0b1220', border: '1px solid rgba(255,255,255,0.08)',
+  background: 'var(--bg-input)', border: '1px solid rgba(255,255,255,0.08)',
   borderRadius: '8px', padding: '10px 14px', fontSize: '14px',
-  color: '#e6eef8', outline: 'none', fontFamily: 'inherit',
+  color: 'var(--text-primary)', outline: 'none', fontFamily: 'inherit',
   width: '100%', boxSizing: 'border-box', transition: 'border-color 0.15s',
 }
 const lbl: React.CSSProperties = {
-  fontSize: '11px', fontWeight: 500, color: '#475569',
+  fontSize: '11px', fontWeight: 500, color: 'var(--text-secondary)',
   textTransform: 'uppercase', letterSpacing: '0.06em',
   display: 'block', marginBottom: '6px',
 }
 const focusGreen = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-  e.currentTarget.style.borderColor = 'rgba(16,185,129,0.4)'
+  e.currentTarget.style.borderColor = 'rgba(74,124,89,0.4)'
 }
 const blurGreen = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
   e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'
@@ -118,14 +118,14 @@ const Profile: React.FC<{ id: string }> = ({ id }) => {
     </div>
   )
 
-  if (loading) return <PageWrap><div style={{ color: '#475569', paddingTop: '48px' }}>Загрузка...</div></PageWrap>
+  if (loading) return <PageWrap><div style={{ color: 'var(--text-secondary)', paddingTop: '48px' }}>Загрузка...</div></PageWrap>
 
   if (error || !user) return (
     <PageWrap>
-      <div style={{ background: '#0f172a', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '16px', padding: '48px 32px', textAlign: 'center', maxWidth: '400px', width: '100%' }}>
-        <h2 style={{ color: '#e6eef8', fontSize: '18px', fontWeight: 700, margin: '0 0 8px' }}>Профиль не найден</h2>
-        <p style={{ color: '#475569', fontSize: '14px', margin: '0 0 20px' }}>{error}</p>
-        <a href="#/" style={{ color: '#10b981', fontSize: '13px', textDecoration: 'none' }}>← На главную</a>
+      <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '16px', padding: '48px 32px', textAlign: 'center', maxWidth: '400px', width: '100%' }}>
+        <h2 style={{ color: 'var(--text-primary)', fontSize: '18px', fontWeight: 700, margin: '0 0 8px' }}>Профиль не найден</h2>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '14px', margin: '0 0 20px' }}>{error}</p>
+        <a href="#/" style={{ color: 'var(--green)', fontSize: '13px', textDecoration: 'none' }}>← На главную</a>
       </div>
     </PageWrap>
   )
@@ -133,22 +133,22 @@ const Profile: React.FC<{ id: string }> = ({ id }) => {
   const Sidebar = ({ editable }: { editable: boolean }) => (
     <div style={{ width: '180px', minWidth: '180px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
       <div style={{ position: 'relative', width: '96px', height: '96px' }}>
-        <div style={{ width: '96px', height: '96px', borderRadius: '50%', overflow: 'hidden', border: '2px solid rgba(16,185,129,0.3)', background: '#1e293b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: '96px', height: '96px', borderRadius: '50%', overflow: 'hidden', border: '2px solid rgba(74,124,89,0.3)', background: '#1e293b', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           {avatarUrl
             ? <img src={avatarUrl} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             : <UserIcon size={36} color="#334155" />}
         </div>
         {editable && (
-          <button onClick={() => fileInputRef.current?.click()} style={{ position: 'absolute', bottom: '2px', right: '2px', width: '26px', height: '26px', borderRadius: '50%', background: '#10b981', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <button onClick={() => fileInputRef.current?.click()} style={{ position: 'absolute', bottom: '2px', right: '2px', width: '26px', height: '26px', borderRadius: '50%', background: 'var(--green)', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Camera size={13} color="white" />
           </button>
         )}
       </div>
-      <span style={{ fontSize: '15px', fontWeight: 700, color: '#e6eef8', textAlign: 'center' }}>{user.userName}</span>
-      <div style={{ width: '100%', background: '#0b1220', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '10px', padding: '12px' }}>
-        <div style={{ fontSize: '12px', color: '#475569', display: 'flex', justifyContent: 'space-between' }}>
+      <span style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text-primary)', textAlign: 'center' }}>{user.userName}</span>
+      <div style={{ width: '100%', background: 'var(--bg-input)', border: '1px solid var(--border)', borderRadius: '10px', padding: '12px' }}>
+        <div style={{ fontSize: '12px', color: 'var(--text-secondary)', display: 'flex', justifyContent: 'space-between' }}>
           <span>Роль</span>
-          <span style={{ color: '#e6eef8', fontWeight: 600 }}>
+          <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>
             {user.role === 2 ? 'GameMaster' : user.role === 3 ? 'Moderator' : user.role === 4 ? 'Admin' : 'Player'}
           </span>
         </div>
@@ -160,21 +160,21 @@ const Profile: React.FC<{ id: string }> = ({ id }) => {
   // Чужой профиль
   if (!isOwn) return (
     <PageWrap>
-      <div style={{ background: '#0f172a', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '16px', overflow: 'hidden', display: 'flex', width: '100%', maxWidth: '700px', boxShadow: '0 4px 32px rgba(0,0,0,0.4)' }}>
-        <div style={{ width: '200px', minWidth: '200px', background: '#0b1220', borderRight: '1px solid rgba(255,255,255,0.06)', padding: '32px 20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+      <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '16px', overflow: 'hidden', display: 'flex', width: '100%', maxWidth: '700px', boxShadow: '0 4px 32px rgba(0,0,0,0.4)' }}>
+        <div style={{ width: '200px', minWidth: '200px', background: 'var(--bg-input)', borderRight: '1px solid var(--border)', padding: '32px 20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
           <Sidebar editable={false} />
         </div>
         <div style={{ flex: 1, padding: '28px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             <label style={lbl}>Никнейм</label>
-            <input readOnly value={user.userName} style={{ ...inp, color: '#475569', cursor: 'default' }} />
+            <input readOnly value={user.userName} style={{ ...inp, color: 'var(--text-secondary)', cursor: 'default' }} />
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             <label style={lbl}>О себе</label>
-            <textarea readOnly value={user.bio || ''} rows={4} style={{ ...inp, resize: 'none', lineHeight: '1.6', color: '#475569', cursor: 'default' }} />
+            <textarea readOnly value={user.bio || ''} rows={4} style={{ ...inp, resize: 'none', lineHeight: '1.6', color: 'var(--text-secondary)', cursor: 'default' }} />
           </div>
-          <div style={{ display: 'flex', gap: '10px', paddingTop: '16px', borderTop: '1px solid rgba(255,255,255,0.06)', marginTop: 'auto' }}>
-            <a href="#/" style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '9px 12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.08)', color: '#475569', fontSize: '13px', textDecoration: 'none' }}>
+          <div style={{ display: 'flex', gap: '10px', paddingTop: '16px', borderTop: '1px solid var(--border)', marginTop: 'auto' }}>
+            <a href="#/" style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '9px 12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text-secondary)', fontSize: '13px', textDecoration: 'none' }}>
               <ArrowLeft size={14} /> Назад
             </a>
           </div>
@@ -186,8 +186,8 @@ const Profile: React.FC<{ id: string }> = ({ id }) => {
   // Свой профиль
   return (
     <PageWrap>
-      <div style={{ background: '#0f172a', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '16px', overflow: 'hidden', display: 'flex', width: '100%', maxWidth: '700px', boxShadow: '0 4px 32px rgba(0,0,0,0.4)' }}>
-        <div style={{ width: '200px', minWidth: '200px', background: '#0b1220', borderRight: '1px solid rgba(255,255,255,0.06)', padding: '32px 20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+      <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '16px', overflow: 'hidden', display: 'flex', width: '100%', maxWidth: '700px', boxShadow: '0 4px 32px rgba(0,0,0,0.4)' }}>
+        <div style={{ width: '200px', minWidth: '200px', background: 'var(--bg-input)', borderRight: '1px solid var(--border)', padding: '32px 20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
           <Sidebar editable={true} />
         </div>
         <div style={{ flex: 1, padding: '28px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -214,14 +214,14 @@ const Profile: React.FC<{ id: string }> = ({ id }) => {
             <label style={lbl}>О себе</label>
             <textarea value={bioText} onChange={e => setBioText(e.target.value)} rows={4} style={{ ...inp, resize: 'none', lineHeight: '1.6' }} onFocus={focusGreen} onBlur={blurGreen} />
           </div>
-          <div style={{ display: 'flex', gap: '10px', paddingTop: '16px', borderTop: '1px solid rgba(255,255,255,0.06)', marginTop: 'auto' }}>
-            <button onClick={saveProfile} style={{ flex: 2, padding: '10px 16px', borderRadius: '8px', border: saved ? '1px solid rgba(16,185,129,0.4)' : 'none', background: saved ? 'rgba(16,185,129,0.1)' : 'linear-gradient(180deg,#10b981,#059669)', color: saved ? '#10b981' : 'white', fontSize: '14px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+          <div style={{ display: 'flex', gap: '10px', paddingTop: '16px', borderTop: '1px solid var(--border)', marginTop: 'auto' }}>
+            <button onClick={saveProfile} style={{ flex: 2, padding: '10px 16px', borderRadius: '8px', border: saved ? '1px solid rgba(74,124,89,0.4)' : 'none', background: saved ? 'rgba(74,124,89,0.1)' : 'linear-gradient(180deg,var(--green),var(--green))', color: saved ? 'var(--green)' : 'white', fontSize: '14px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
               <Save size={15} /> {saved ? 'Сохранено!' : 'Сохранить'}
             </button>
-            <button onClick={() => { setFirstName(user.firstName || ''); setLastName(user.lastName || ''); setUsername(user.userName); setBioText(user.bio || ''); setAvatarUrl(user.avatarUrl || '') }} style={{ flex: 1, padding: '10px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.08)', background: 'transparent', color: '#475569', fontSize: '14px', cursor: 'pointer', fontFamily: 'inherit' }}>
+            <button onClick={() => { setFirstName(user.firstName || ''); setLastName(user.lastName || ''); setUsername(user.userName); setBioText(user.bio || ''); setAvatarUrl(user.avatarUrl || '') }} style={{ flex: 1, padding: '10px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.08)', background: 'transparent', color: 'var(--text-secondary)', fontSize: '14px', cursor: 'pointer', fontFamily: 'inherit' }}>
               Сбросить
             </button>
-            <a href="#/" style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.08)', color: '#475569', fontSize: '13px', textDecoration: 'none' }}>
+            <a href="#/" style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text-secondary)', fontSize: '13px', textDecoration: 'none' }}>
               <ArrowLeft size={14} />
             </a>
           </div>

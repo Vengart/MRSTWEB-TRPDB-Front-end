@@ -1,5 +1,5 @@
 export { default as Card } from './Card'
 export type { CardProps } from './Card'
-export { default as Badge } from './Badge'
-export { default as SessionCard } from './SessionCard'
+export { default as Badge } from "./Badge";
+export { default as SessionCard } from "./SessionCard";
 export type { SessionCardProps } from './SessionCard'

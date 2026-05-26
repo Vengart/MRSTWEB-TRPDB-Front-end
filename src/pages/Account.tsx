@@ -22,30 +22,30 @@ const roleBtnStyle = (active: boolean): React.CSSProperties => ({
   flex: 1, padding: '9px 12px', borderRadius: '8px',
   border: active ? '1px solid rgba(16,185,129,0.5)' : '1px solid rgba(255,255,255,0.08)',
   background: active ? 'rgba(16,185,129,0.08)' : 'transparent',
-  color: active ? '#10b981' : '#475569', fontSize: '13px',
+  color: active ? 'var(--green)' : 'var(--text-secondary)', fontSize: '13px',
   fontWeight: active ? 500 : 400, cursor: 'pointer',
   display: 'flex', alignItems: 'center', justifyContent: 'center',
   gap: '6px', transition: 'all 0.15s', fontFamily: 'inherit',
 })
 
 const s: Record<string, React.CSSProperties> = {
-  page: { minHeight: '100vh', background: '#0b1220', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: '96px', paddingBottom: '48px', paddingLeft: '16px', paddingRight: '16px' },
-  card: { background: '#0f172a', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '16px', overflow: 'hidden', display: 'flex', flexDirection: 'row', width: '100%', maxWidth: '720px', boxShadow: '0 4px 32px rgba(0,0,0,0.4)' },
-  sidebar: { width: '180px', minWidth: '180px', background: '#0b1220', borderRight: '1px solid rgba(255,255,255,0.06)', padding: '32px 20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' },
+  page: { minHeight: '100vh', background: 'var(--bg-input)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: '96px', paddingBottom: '48px', paddingLeft: '16px', paddingRight: '16px' },
+  card: { background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '16px', overflow: 'hidden', display: 'flex', flexDirection: 'row', width: '100%', maxWidth: '720px', boxShadow: '0 4px 32px rgba(0, 0, 0, 0.4)' },
+  sidebar: { width: '180px', minWidth: '180px', background: 'var(--bg-input)', borderRight: '1px solid var(--border)', padding: '32px 20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' },
   avatarWrap: { width: '88px', height: '88px', borderRadius: '50%', overflow: 'hidden', border: '2px solid rgba(16,185,129,0.3)', background: '#1e293b', display: 'flex', alignItems: 'center', justifyContent: 'center' },
-  camBtn: { position: 'absolute', bottom: '2px', right: '2px', width: '26px', height: '26px', borderRadius: '50%', background: '#10b981', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 },
-  nickLabel: { fontSize: '14px', fontWeight: 500, color: '#e6eef8', textAlign: 'center' },
-  deleteBtn: { background: 'none', border: 'none', padding: '4px 0', fontSize: '12px', color: '#475569', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', transition: 'color 0.15s' },
+  camBtn: { position: 'absolute', bottom: '2px', right: '2px', width: '26px', height: '26px', borderRadius: '50%', background: 'var(--green)', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 },
+  nickLabel: { fontSize: '14px', fontWeight: 500, color: 'var(--text-primary)', textAlign: 'center' },
+  deleteBtn: { background: 'none', border: 'none', padding: '4px 0', fontSize: '12px', color: 'var(--text-secondary)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', transition: 'color 0.15s' },
   form: { flex: 1, padding: '28px', display: 'flex', flexDirection: 'column', gap: '20px' },
   grid2: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' },
   field: { display: 'flex', flexDirection: 'column', gap: '6px' },
-  label: { fontSize: '11px', fontWeight: 500, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.06em' },
-  input: { background: '#0b1220', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '10px 14px', fontSize: '14px', color: '#e6eef8', outline: 'none', fontFamily: 'inherit', transition: 'border-color 0.15s' },
-  inputReadonly: { background: '#080f1a', border: '1px solid rgba(255,255,255,0.04)', borderRadius: '8px', padding: '10px 14px', fontSize: '14px', color: '#334155', outline: 'none', fontFamily: 'inherit', cursor: 'not-allowed' },
-  textarea: { background: '#0b1220', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '10px 14px', fontSize: '14px', color: '#e6eef8', outline: 'none', fontFamily: 'inherit', resize: 'none', lineHeight: '1.6', transition: 'border-color 0.15s' },
+  label: { fontSize: '11px', fontWeight: 500, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.06em' },
+  input: { background: 'var(--bg-input)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '10px 14px', fontSize: '14px', color: 'var(--text-primary)', outline: 'none', fontFamily: 'inherit', transition: 'border-color 0.15s' },
+  inputReadonly: { background: 'var(--bg-input)', border: '1px solid rgba(255,255,255,0.04)', borderRadius: '8px', padding: '10px 14px', fontSize: '14px', color: '#345533', outline: 'none', fontFamily: 'inherit', cursor: 'not-allowed' },
+  textarea: { background: 'var(--bg-input)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '10px 14px', fontSize: '14px', color: 'var(--text-primary)', outline: 'none', fontFamily: 'inherit', resize: 'none', lineHeight: '1.6', transition: 'border-color 0.15s' },
   roles: { display: 'flex', gap: '10px' },
-  actions: { display: 'flex', gap: '10px', paddingTop: '16px', borderTop: '1px solid rgba(255,255,255,0.06)', marginTop: '4px' },
-  logoutBtn: { flex: 1, padding: '10px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.08)', background: 'transparent', color: '#475569', fontSize: '14px', cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s' },
+  actions: { display: 'flex', gap: '10px', paddingTop: '16px', borderTop: '1px solid var(--border)', marginTop: '4px' },
+  logoutBtn: { flex: 1, padding: '10px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.08)', background: 'transparent', color: 'var(--text-secondary)', fontSize: '14px', cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s' },
 }
 
 const Account: React.FC = () => {
@@ -140,14 +140,14 @@ const Account: React.FC = () => {
 
   if (loading) return (
     <div style={s.page}>
-      <div style={{ color: '#475569', paddingTop: '48px' }}>Загрузка...</div>
+      <div style={{ color: 'var(--text-secondary)', paddingTop: '48px' }}>Загрузка...</div>
     </div>
   )
 
   if (!user) return (
     <div style={s.page}>
-      <div style={{ color: '#475569', paddingTop: '48px' }}>
-        Войдите в аккаунт. <a href="#/login" style={{ color: '#10b981' }}>Войти</a>
+      <div style={{ color: 'var(--text-secondary)', paddingTop: '48px' }}>
+        Войдите в аккаунт. <a href="#/login" style={{ color: 'var(--green)' }}>Войти</a>
       </div>
     </div>
   )
@@ -175,7 +175,7 @@ const Account: React.FC = () => {
 
           <button style={s.deleteBtn} onClick={() => setAvatar('')}
             onMouseEnter={e => (e.currentTarget.style.color = '#ef4444')}
-            onMouseLeave={e => (e.currentTarget.style.color = '#475569')}>
+            onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-secondary)')}>
             <Trash2 size={12} /> Удалить фото
           </button>
 
@@ -259,14 +259,14 @@ const Account: React.FC = () => {
           </div>
 
           <div style={s.actions}>
-            <button style={{ flex: 2, padding: '10px 16px', borderRadius: '8px', border: status ? '1px solid rgba(16,185,129,0.4)' : 'none', background: status ? 'rgba(16,185,129,0.1)' : 'linear-gradient(180deg,#10b981,#059669)', color: status ? '#10b981' : 'white', fontSize: '14px', fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontFamily: 'inherit' }}
+            <button style={{ flex: 2, padding: '10px 16px', borderRadius: '8px', border: status ? '1px solid rgba(16,185,129,0.4)' : 'none', background: status ? 'rgba(16,185,129,0.1)' : 'linear-gradient(180deg,var(--green),var(--green))', color: status ? 'var(--green)' : 'white', fontSize: '14px', fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontFamily: 'inherit' }}
               onClick={save}>
               {status ? <CheckCircle size={15} /> : <Save size={15} />}
               {status || 'Сохранить'}
             </button>
             <button style={s.logoutBtn} onClick={logout}
               onMouseEnter={e => { e.currentTarget.style.color = '#ef4444'; e.currentTarget.style.borderColor = 'rgba(239,68,68,0.3)' }}
-              onMouseLeave={e => { e.currentTarget.style.color = '#475569'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)' }}>
+              onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-secondary)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)' }}>
               Выйти
             </button>
           </div>

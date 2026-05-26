@@ -1,0 +1,18 @@
+/* src/components/layout/Layout.module.css */
+.page {
+  min-height: 100vh;
+  background: var(--bg-base);
+  position: relative;
+  z-index: 1;
+}
+
+.main {
+  padding-top: 80px;
+  padding-bottom: 64px;
+  padding-left: 32px;
+  padding-right: 32px;
+  max-width: 1240px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}

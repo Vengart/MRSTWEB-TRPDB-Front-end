@@ -1,0 +1,108 @@
+/* src/styles/theme.css */
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap');
+
+:root {
+  /* === ЦВЕТА === */
+  /* Фоны — тёмно-серые с зелёным подтоном */
+  --bg-base: #111714;
+  --bg-deep: #0c100e;
+  --bg-card: #161d19;
+  --bg-card-hover: #1c2520;
+  --bg-input: #0f1512;
+  --bg-overlay: rgba(12,16,14,0.92);
+
+  /* Акцент — пастельно-бежевый/пергаментный */
+  --accent: #d4b896;
+  --accent-dim: #a8916e;
+  --accent-glow: rgba(212,184,150,0.12);
+  --accent-text: #0c100e;
+
+  /* Зелёный — лесной, приглушённый */
+  --green: #4a7c59;
+  --green-light: #6aaa7e;
+  --green-dim: rgba(74,124,89,0.15);
+  --green-border: rgba(74,124,89,0.25);
+
+  /* Текст — пергаментные оттенки */
+  --text-primary: #e8dcc8;
+  --text-secondary: #8a9e8e;
+  --text-dim: #3d4f42;
+  --text-muted: #2a382d;
+
+  /* Границы */
+  --border: rgba(212,184,150,0.08);
+  --border-hover: rgba(212,184,150,0.22);
+  --border-green: rgba(74,124,89,0.2);
+
+  /* Статусы */
+  --success: #4a7c59;
+  --error: #9b4444;
+  --warning: #8a7040;
+
+  /* === ТИПОГРАФИКА === */
+  --font-display: 'Cinzel', serif;        /* заголовки — фэнтезийный */
+  --font-body: 'Crimson Pro', serif;      /* тело — читабельный антиква */
+
+  /* === ФОРМА === */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 18px;
+
+  /* === ТЕНИ === */
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 20px rgba(0,0,0,0.5);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.6);
+  --shadow-glow: 0 0 24px rgba(212,184,150,0.08);
+  --shadow-green: 0 0 20px rgba(74,124,89,0.12);
+}
+
+/* === ГЛОБАЛЬНЫЕ СТИЛИ === */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Текстура фона — лёгкий шум */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+/* Тонкое свечение сверху */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 300px;
+  background: radial-gradient(ellipse at 50% -20%, rgba(74,124,89,0.08) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  color: var(--text-primary);
+  letter-spacing: 0.03em;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { color: var(--accent-dim); }
+
+/* Скроллбар */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-deep); }
+::-webkit-scrollbar-thumb { background: var(--text-dim); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }

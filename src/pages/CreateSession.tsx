@@ -8,19 +8,19 @@ type CreateSessionProps = {
 }
 
 const input: React.CSSProperties = {
-  background: '#0b1220', border: '1px solid rgba(255,255,255,0.08)',
+  background: 'var(--bg-input)', border: '1px solid rgba(255,255,255,0.08)',
   borderRadius: '8px', padding: '10px 14px', fontSize: '14px',
-  color: '#e6eef8', outline: 'none', fontFamily: 'inherit',
+  color: 'var(--text-primary)', outline: 'none', fontFamily: 'inherit',
   width: '100%', boxSizing: 'border-box', transition: 'border-color 0.15s',
 }
 const label: React.CSSProperties = {
-  fontSize: '11px', fontWeight: 500, color: '#475569',
+  fontSize: '11px', fontWeight: 500, color: 'var(--text-secondary)',
   textTransform: 'uppercase', letterSpacing: '0.06em',
   display: 'block', marginBottom: '6px',
 }
 const field: React.CSSProperties = { display: 'flex', flexDirection: 'column' }
 const focusGreen = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
-  e.currentTarget.style.borderColor = 'rgba(16,185,129,0.4)'
+  e.currentTarget.style.borderColor = 'rgba(74,124,89,0.4)'
 const blurGreen = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
   e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'
 
@@ -31,15 +31,15 @@ const CreateSession: React.FC<CreateSessionProps> = ({ isGamemaster, onCreate, o
   })
 
   if (!isGamemaster) return (
-    <div style={{ maxWidth: '480px', margin: '0 auto', background: '#0f172a', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '16px', padding: '40px 32px', textAlign: 'center' }}>
+    <div style={{ maxWidth: '480px', margin: '0 auto', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '16px', padding: '40px 32px', textAlign: 'center' }}>
       <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
         <X size={24} color="#ef4444" />
       </div>
-      <h2 style={{ color: '#e6eef8', fontSize: '20px', fontWeight: 700, margin: '0 0 8px' }}>Доступ ограничен</h2>
-      <p style={{ color: '#475569', fontSize: '14px', lineHeight: 1.6, margin: '0 0 24px' }}>
+      <h2 style={{ color: 'var(--text-primary)', fontSize: '20px', fontWeight: 700, margin: '0 0 8px' }}>Доступ ограничен</h2>
+      <p style={{ color: 'var(--text-secondary)', fontSize: '14px', lineHeight: 1.6, margin: '0 0 24px' }}>
         Создавать сессии могут только пользователи с ролью Гейммастер.
       </p>
-      <a href="#/account" style={{ display: 'inline-block', padding: '9px 20px', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.25)', borderRadius: '999px', color: '#10b981', fontSize: '14px', fontWeight: 500, textDecoration: 'none' }}>
+      <a href="#/account" style={{ display: 'inline-block', padding: '9px 20px', background: 'rgba(74,124,89,0.1)', border: '1px solid rgba(74,124,89,0.25)', borderRadius: '999px', color: 'var(--green)', fontSize: '14px', fontWeight: 500, textDecoration: 'none' }}>
         Перейти в аккаунт
       </a>
     </div>
@@ -48,13 +48,13 @@ const CreateSession: React.FC<CreateSessionProps> = ({ isGamemaster, onCreate, o
   return (
     <div style={{ maxWidth: '640px', margin: '0 auto' }}>
       <div style={{ marginBottom: '24px' }}>
-        <h2 style={{ fontSize: '24px', fontWeight: 900, color: '#e6eef8', margin: '0 0 4px', letterSpacing: '-0.3px' }}>
-          Новая <span style={{ color: '#10b981' }}>сессия</span>
+        <h2 style={{ fontSize: '24px', fontWeight: 900, color: 'var(--text-primary)', margin: '0 0 4px', letterSpacing: '-0.3px' }}>
+          Новая <span style={{ color: 'var(--green)' }}>сессия</span>
         </h2>
-        <p style={{ color: '#475569', fontSize: '13px', margin: 0 }}>Заполни детали — и собирай команду</p>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '13px', margin: 0 }}>Заполни детали — и собирай команду</p>
       </div>
 
-      <div style={{ background: '#0f172a', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '16px', padding: '28px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '16px', padding: '28px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
         <div style={field}>
           <label style={label}>Название</label>
@@ -133,17 +133,17 @@ const CreateSession: React.FC<CreateSessionProps> = ({ isGamemaster, onCreate, o
             onFocus={focusGreen} onBlur={blurGreen} placeholder="https://..." />
         </div>
 
-        <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '4px' }} />
+        <div style={{ borderTop: '1px solid var(--border)', paddingTop: '4px' }} />
 
         <div style={{ display: 'flex', gap: '12px' }}>
           <button onClick={() => onCreate(form)} disabled={!form.title || !form.game}
-            style={{ flex: 2, padding: '11px 16px', borderRadius: '8px', border: 'none', background: (!form.title || !form.game) ? 'rgba(255,255,255,0.05)' : 'linear-gradient(180deg,#10b981,#059669)', color: (!form.title || !form.game) ? '#334155' : 'white', fontSize: '14px', fontWeight: 600, cursor: (!form.title || !form.game) ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontFamily: 'inherit' }}>
+            style={{ flex: 2, padding: '11px 16px', borderRadius: '8px', border: 'none', background: (!form.title || !form.game) ? 'rgba(255,255,255,0.05)' : 'linear-gradient(180deg,var(--green),var(--green))', color: (!form.title || !form.game) ? '#334155' : 'white', fontSize: '14px', fontWeight: 600, cursor: (!form.title || !form.game) ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontFamily: 'inherit' }}>
             <Plus size={16} /> Создать сессию
           </button>
           <button onClick={onCancel}
-            style={{ flex: 1, padding: '11px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.08)', background: 'transparent', color: '#475569', fontSize: '14px', cursor: 'pointer', fontFamily: 'inherit' }}
-            onMouseEnter={e => { e.currentTarget.style.color = '#e6eef8'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)' }}
-            onMouseLeave={e => { e.currentTarget.style.color = '#475569'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)' }}>
+            style={{ flex: 1, padding: '11px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.08)', background: 'transparent', color: 'var(--text-secondary)', fontSize: '14px', cursor: 'pointer', fontFamily: 'inherit' }}
+            onMouseEnter={e => { e.currentTarget.style.color = 'var(--text-primary)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)' }}
+            onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-secondary)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)' }}>
             Отмена
           </button>
         </div>

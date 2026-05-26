@@ -20,7 +20,7 @@ const ROLES: Record<number, string> = {
 }
 
 const ROLE_COLORS: Record<number, string> = {
-  0: '#475569', 1: '#3b82f6', 2: '#10b981', 3: '#f59e0b', 4: '#ef4444'
+  0: 'var(--text-secondary)', 1: '#3b82f6', 2: 'var(--green)', 3: '#f59e0b', 4: '#ef4444'
 }
 
 const AdminPanel: React.FC = () => {
@@ -35,10 +35,10 @@ const AdminPanel: React.FC = () => {
   const currentRole = localStorage.getItem('role')
   if (currentRole !== '4') {
     return (
-      <div style={{ maxWidth: 500, margin: '80px auto', textAlign: 'center', padding: 32, background: '#0f172a', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 16 }}>
+      <div style={{ maxWidth: 500, margin: '80px auto', textAlign: 'center', padding: 32, background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 16 }}>
         <h2 style={{ color: '#ef4444', marginBottom: 8 }}>Доступ запрещён</h2>
-        <p style={{ color: '#475569', marginBottom: 20 }}>Эта страница доступна только администраторам.</p>
-        <a href="#/" style={{ color: '#10b981' }}>← На главную</a>
+        <p style={{ color: 'var(--text-secondary)', marginBottom: 20 }}>Эта страница доступна только администраторам.</p>
+        <a href="#/" style={{ color: 'var(--green)' }}>← На главную</a>
       </div>
     )
   }
@@ -98,12 +98,12 @@ const hardDeleteUser = async (id: number) => {
   )
 
   const inp: React.CSSProperties = {
-    background: '#0b1220', border: '1px solid rgba(255,255,255,0.08)',
+    background: 'var(--bg-input)', border: '1px solid rgba(255,255,255,0.08)',
     borderRadius: 8, padding: '9px 12px', fontSize: 14,
-    color: '#e6eef8', outline: 'none', fontFamily: 'inherit', width: '100%', boxSizing: 'border-box'
+    color: 'var(--text-primary)', outline: 'none', fontFamily: 'inherit', width: '100%', boxSizing: 'border-box'
   }
   const lbl: React.CSSProperties = {
-    fontSize: 11, fontWeight: 500, color: '#475569',
+    fontSize: 11, fontWeight: 500, color: 'var(--text-secondary)',
     textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: 6
   }
 
@@ -112,23 +112,23 @@ const hardDeleteUser = async (id: number) => {
 
       {/* Заголовок */}
       <div style={{ marginBottom: 32 }}>
-        <h1 style={{ color: '#e6eef8', fontSize: 28, fontWeight: 900, margin: '0 0 4px' }}>
+        <h1 style={{ color: 'var(--text-primary)', fontSize: 28, fontWeight: 900, margin: '0 0 4px' }}>
           Админ <span style={{ color: '#ef4444' }}>панель</span>
         </h1>
-        <p style={{ color: '#475569', fontSize: 14, margin: 0 }}>Управление пользователями и контентом</p>
+        <p style={{ color: 'var(--text-secondary)', fontSize: 14, margin: 0 }}>Управление пользователями и контентом</p>
       </div>
 
       {/* Статистика */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
         {[
           { label: 'Всего пользователей', value: users.length, color: '#3b82f6' },
-          { label: 'Игроков', value: users.filter(u => u.role === 1).length, color: '#10b981' },
+          { label: 'Игроков', value: users.filter(u => u.role === 1).length, color: 'var(--green)' },
           { label: 'Геймастеров', value: users.filter(u => u.role === 2).length, color: '#f59e0b' },
-          { label: 'Активных', value: users.filter(u => u.isActive).length, color: '#10b981' },
+          { label: 'Активных', value: users.filter(u => u.isActive).length, color: 'var(--green)' },
         ].map((stat, i) => (
-          <div key={i} style={{ background: '#0f172a', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12, padding: '16px 20px' }}>
+          <div key={i} style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 12, padding: '16px 20px' }}>
             <div style={{ fontSize: 28, fontWeight: 900, color: stat.color }}>{stat.value}</div>
-            <div style={{ fontSize: 12, color: '#475569', marginTop: 4 }}>{stat.label}</div>
+            <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 4 }}>{stat.label}</div>
           </div>
         ))}
       </div>
@@ -145,11 +145,11 @@ const hardDeleteUser = async (id: number) => {
 
       {/* Таблица пользователей */}
       {loading ? (
-        <div style={{ color: '#475569' }}>Загрузка...</div>
+        <div style={{ color: 'var(--text-secondary)' }}>Загрузка...</div>
       ) : (
-        <div style={{ background: '#0f172a', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 16, overflow: 'hidden' }}>
+        <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
           {/* Шапка таблицы */}
-          <div style={{ display: 'grid', gridTemplateColumns: '40px 1fr 1fr 120px 80px 120px', gap: 16, padding: '12px 20px', borderBottom: '1px solid rgba(255,255,255,0.06)', fontSize: 11, color: '#475569', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '40px 1fr 1fr 120px 80px 120px', gap: 16, padding: '12px 20px', borderBottom: '1px solid var(--border)', fontSize: 11, color: 'var(--text-secondary)', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
             <div>#</div>
             <div>Пользователь</div>
             <div>Email</div>
@@ -165,19 +165,19 @@ const hardDeleteUser = async (id: number) => {
               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
               <div style={{ color: '#334155', fontSize: 13 }}>{i + 1}</div>
               <div>
-                <div style={{ color: '#e6eef8', fontSize: 14, fontWeight: 500 }}>{user.userName}</div>
+                <div style={{ color: 'var(--text-primary)', fontSize: 14, fontWeight: 500 }}>{user.userName}</div>
                 {(user.firstName || user.lastName) && (
-                  <div style={{ color: '#475569', fontSize: 12 }}>{user.firstName} {user.lastName}</div>
+                  <div style={{ color: 'var(--text-secondary)', fontSize: 12 }}>{user.firstName} {user.lastName}</div>
                 )}
               </div>
-              <div style={{ color: '#475569', fontSize: 13 }}>{user.email}</div>
+              <div style={{ color: 'var(--text-secondary)', fontSize: 13 }}>{user.email}</div>
               <div>
                 <span style={{ fontSize: 12, fontWeight: 600, color: ROLE_COLORS[user.role], background: `${ROLE_COLORS[user.role]}18`, padding: '3px 10px', borderRadius: 999 }}>
                   {ROLES[user.role]}
                 </span>
               </div>
               <div>
-                <span style={{ fontSize: 12, color: user.isActive ? '#10b981' : '#ef4444' }}>
+                <span style={{ fontSize: 12, color: user.isActive ? 'var(--green)' : '#ef4444' }}>
                   {user.isActive ? '● Активен' : '○ Удалён'}
                 </span>
               </div>
@@ -211,8 +211,8 @@ const hardDeleteUser = async (id: number) => {
       {/* Модалка редактирования */}
       {editUser && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-          <div style={{ background: '#0f172a', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: 32, width: '100%', maxWidth: 480, display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <h2 style={{ color: '#e6eef8', margin: 0, fontSize: 18, fontWeight: 700 }}>
+          <div style={{ background: 'var(--bg-card)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: 32, width: '100%', maxWidth: 480, display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <h2 style={{ color: 'var(--text-primary)', margin: 0, fontSize: 18, fontWeight: 700 }}>
               Редактировать пользователя
             </h2>
 
@@ -250,11 +250,11 @@ const hardDeleteUser = async (id: number) => {
 
             <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
               <button onClick={saveEdit}
-                style={{ flex: 2, padding: '10px', borderRadius: 8, border: 'none', background: 'linear-gradient(180deg,#10b981,#059669)', color: 'white', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
+                style={{ flex: 2, padding: '10px', borderRadius: 8, border: 'none', background: 'linear-gradient(180deg,var(--green),var(--green))', color: 'white', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
                 Сохранить
               </button>
               <button onClick={() => setEditUser(null)}
-                style={{ flex: 1, padding: '10px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.08)', background: 'transparent', color: '#475569', fontSize: 14, cursor: 'pointer', fontFamily: 'inherit' }}>
+                style={{ flex: 1, padding: '10px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.08)', background: 'transparent', color: 'var(--text-secondary)', fontSize: 14, cursor: 'pointer', fontFamily: 'inherit' }}>
                 Отмена
               </button>
             </div>

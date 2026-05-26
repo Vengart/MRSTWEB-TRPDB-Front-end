@@ -1,7 +1,7 @@
 import SessionNotes from './pages/SessionNotes'
 import React, { useEffect, useState } from 'react'
-import { Layout } from '../components/layout'
-import { SessionCard } from '../components/ui'
+import { Layout } from './components/layout'
+import { SessionCard } from './components/ui'
 import SessionDetail from './pages/SessionDetail'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -179,16 +179,16 @@ const App: React.FC = () => {
     <Layout>
       <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
         <div style={{ marginBottom: '32px' }}>
-          <h1 style={{ fontSize: '32px', fontWeight: 900, color: '#e6eef8', margin: 0, letterSpacing: '-0.5px' }}>
-            Игровые <span style={{ color: '#10b981' }}>сессии</span>
+          <h1 style={{ fontSize: '32px', fontWeight: 900, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.5px' }}>
+            Игровые <span style={{ color: 'var(--green)' }}>сессии</span>
           </h1>
-          <p style={{ color: '#475569', fontSize: '14px', marginTop: '6px' }}>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginTop: '6px' }}>
             Найди стол или собери свою команду
           </p>
         </div>
 
         {loading ? (
-          <div style={{ color: '#475569' }}>Загрузка...</div>
+          <div style={{ color: 'var(--text-secondary)' }}>Загрузка...</div>
         ) : (
 
           <section style={{
