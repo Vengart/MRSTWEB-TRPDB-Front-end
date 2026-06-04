@@ -153,7 +153,10 @@ const SessionDetail: React.FC<{ id: string; onJoin: (id: string) => Promise<void
         if (res.ok) {
           const data = await res.json()
           setSession(data)
-          loadAvailability(data.id)
+          // Загружаем доступность только если есть id и пользователь залогинен
+          if (data.id && getToken()) {
+            loadAvailability(data.id)
+          }
         }
       } catch { }
       setLoading(false)
@@ -162,12 +165,13 @@ const SessionDetail: React.FC<{ id: string; onJoin: (id: string) => Promise<void
   }, [id])
 
   const loadAvailability = async (sessionId: number) => {
+    if (!sessionId || !getToken()) return  // не грузим без токена
     try {
       const res = await fetch(`${BASE_URL}/availability/session/${sessionId}`, {
         headers: { Authorization: `Bearer ${getToken()}` }
       })
       if (res.ok) setAvailabilities(await res.json())
-    } catch (e) {
+    } catch {
       setAvailabilities([])
     }
   }

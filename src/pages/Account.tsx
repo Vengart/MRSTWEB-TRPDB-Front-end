@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react'
-import { Camera, Save, User as UserIcon, Trash2, CheckCircle } from 'lucide-react'
+import { Camera, Save, User as UserIcon, Trash2, CheckCircle, Calendar } from 'lucide-react'
 
 const BASE_URL = 'https://localhost:7214/api'
 const getToken = () => localStorage.getItem('token')
@@ -16,6 +16,14 @@ type UserProfile = {
   role: number
   password?: string
   isActive?: boolean
+}
+
+type UserSession = {
+  id: number
+  title: string
+  system?: string
+  setting?: string
+  scheduledAt?: string // Дата сессии от ГМ
 }
 
 const roleBtnStyle = (active: boolean): React.CSSProperties => ({
@@ -46,10 +54,17 @@ const s: Record<string, React.CSSProperties> = {
   roles: { display: 'flex', gap: '10px' },
   actions: { display: 'flex', gap: '10px', paddingTop: '16px', borderTop: '1px solid var(--border)', marginTop: '4px' },
   logoutBtn: { flex: 1, padding: '10px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.08)', background: 'transparent', color: 'var(--text-secondary)', fontSize: '14px', cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.15s' },
+  
+  /* Стили для нового блока игр */
+  gamesCard: { background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '16px', padding: '28px', width: '100%', maxWidth: '720px', boxSizing: 'border-box', boxShadow: '0 4px 32px rgba(0, 0, 0, 0.4)', display: 'flex', flexDirection: 'column', gap: '16px' },
+  gameItem: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-input)', border: '1px solid rgba(255,255,255,0.04)', borderRadius: '12px', padding: '14px 20px', transition: 'border-color 0.15s' },
+  gameLink: { color: 'var(--text-primary)', fontSize: '15px', fontWeight: 600, textDecoration: 'none', transition: 'color 0.15s' },
+  gameDateBox: { display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--green-light)', background: 'var(--green-dim)', border: '1px solid var(--green-border)', padding: '6px 12px', borderRadius: '8px', fontSize: '13px', fontWeight: 500 }
 }
 
 const Account: React.FC = () => {
   const [user, setUser] = useState<UserProfile | null>(null)
+  const [mySessions, setMySessions] = useState<UserSession[]>([])
   const [nick, setNick] = useState('')
   const [email, setEmail] = useState('')
   const [bio, setBio] = useState('')
@@ -61,73 +76,95 @@ const Account: React.FC = () => {
   const fileRef = useRef<HTMLInputElement | null>(null)
   const [oldPassword, setOldPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
-  const [role, setRole] = useState<number>(user?.role || 1)
+  const [role, setRole] = useState<number>(1)
 
+  // Красивое форматирование даты сессии
+  const formatSessionDate = (dateStr?: string) => {
+    if (!dateStr) return 'Дата не назначена';
+    const d = new Date(dateStr);
+    return d.toLocaleString('ru-RU', {
+      day: 'numeric',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
 
   useEffect(() => {
     const id = getCurrentUserId()
     if (!id) { setLoading(false); return }
 
-    fetch(`${BASE_URL}/users/${id}`, {
+    // Загрузка данных профиля
+    const fetchUser = fetch(`${BASE_URL}/users/${id}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getToken()}`
+      }
+    }).then(r => r.json());
+
+    // Загрузка активных сессий пользователя
+    const fetchSessions = fetch(`${BASE_URL}/gamesessions/user/${id}`, {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${getToken()}`
       }
     })
-      .then(r => r.json())
-      .then((data: UserProfile) => {
-        setUser(data)
-        setNick(data.userName || '')
-        setEmail(data.email || '')
-        setBio(data.bio || '')
-        setAvatar(data.avatarUrl || '')
-        setFirstName(data.firstName || '')
-        setLastName(data.lastName || '')
-        setRole(data.role || 1)
+    .then(r => r.ok ? r.json() : [])
+    .catch(() => []);
+
+    Promise.all([fetchUser, fetchSessions])
+      .then(([userData, sessionsData]) => {
+        setUser(userData)
+        setNick(userData.userName || '')
+        setEmail(userData.email || '')
+        setBio(userData.bio || '')
+        setAvatar(userData.avatarUrl || '')
+        setFirstName(userData.firstName || '')
+        setLastName(userData.lastName || '')
+        setRole(userData.role || 1)
+        setMySessions(sessionsData)
       })
       .catch(() => {})
       .finally(() => setLoading(false))
   }, [])
 
   const save = async () => {
-  if (!user) return
-  const body: Record<string, any> = {}
+    if (!user) return
+    const body: Record<string, any> = {}
 
-  if (nick) body.userName = nick
-  if (email) body.email = email
-  if (bio) body.bio = bio
-  if (avatar !== undefined) body.avatarUrl = avatar
-  if (firstName) body.firstName = firstName
-  if (lastName) body.lastName = lastName
-  if (newPassword) body.password = newPassword
-  if (role) body.role = role
-  
+    if (nick) body.userName = nick
+    if (email) body.email = email
+    if (bio) body.bio = bio
+    if (avatar !== undefined) body.avatarUrl = avatar
+    if (firstName) body.firstName = firstName
+    if (lastName) body.lastName = lastName
+    if (newPassword) body.password = newPassword
+    if (role) body.role = role
 
-  try {
-    const res = await fetch(`${BASE_URL}/users/${user.id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${getToken()}`
-      },
-      body: JSON.stringify(body)
-    })
-    if (res.ok) {
-      setStatus('Сохранено!')
-      setTimeout(() => setStatus(null), 2000)
-      try { window.dispatchEvent(new Event('authChange')) } catch {}
-      localStorage.setItem('role', String(role))
-      try { window.dispatchEvent(new Event('authChange')) } catch {}
-
-    } else {
-      setStatus('Ошибка сохранения')
+    try {
+      const res = await fetch(`${BASE_URL}/users/${user.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${getToken()}`
+        },
+        body: JSON.stringify(body)
+      })
+      if (res.ok) {
+        setStatus('Сохранено!')
+        setTimeout(() => setStatus(null), 2000)
+        try { window.dispatchEvent(new Event('authChange')) } catch {}
+        localStorage.setItem('role', String(role))
+        try { window.dispatchEvent(new Event('authChange')) } catch {}
+      } else {
+        setStatus('Ошибка сохранения')
+        setTimeout(() => setStatus(null), 2000)
+      }
+    } catch {
+      setStatus('Ошибка соединения')
       setTimeout(() => setStatus(null), 2000)
     }
-  } catch {
-    setStatus('Ошибка соединения')
-    setTimeout(() => setStatus(null), 2000)
   }
-}
 
   const logout = () => {
     localStorage.removeItem('token')
@@ -154,123 +191,170 @@ const Account: React.FC = () => {
 
   return (
     <div style={s.page}>
-      <div style={s.card}>
-        {/* Sidebar */}
-        <div style={s.sidebar}>
-          <div style={{ position: 'relative', width: '88px', height: '88px' }}>
-            <div style={s.avatarWrap}>
-              {avatar
-                ? <img src={avatar} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                : <UserIcon size={32} color="#334155" />}
+      {/* Общий контейнер, чтобы карточки шли друг за другом */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', width: '100%', maxWidth: '720px', alignItems: 'center' }}>
+        
+        {/* Карточка профиля */}
+        <div style={s.card}>
+          {/* Sidebar */}
+          <div style={s.sidebar}>
+            <div style={{ position: 'relative', width: '88px', height: '88px' }}>
+              <div style={s.avatarWrap}>
+                {avatar
+                  ? <img src={avatar} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  : <UserIcon size={32} color="#334155" />}
+              </div>
+              <button style={s.camBtn} onClick={() => fileRef.current?.click()}>
+                <Camera size={13} color="white" />
+              </button>
             </div>
-            <button style={s.camBtn} onClick={() => fileRef.current?.click()}>
-              <Camera size={13} color="white" />
+
+            <span style={s.nickLabel}>{nick}</span>
+            <span style={{ fontSize: '11px', color: '#334155' }}>
+              {user.role === 2 ? 'GameMaster' : user.role === 3 ? 'Moderator' : user.role === 4 ? 'Admin' : 'Player'}
+            </span>
+
+            <button style={s.deleteBtn} onClick={() => setAvatar('')}
+              onMouseEnter={e => (e.currentTarget.style.color = '#ef4444')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-secondary)')}>
+              <Trash2 size={12} /> Удалить фото
             </button>
+
+            <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={e => {
+              const f = e.target.files?.[0]; if (!f) return
+              const r = new FileReader()
+              r.onload = () => setAvatar(r.result as string)
+              r.readAsDataURL(f)
+            }} />
           </div>
-
-          <span style={s.nickLabel}>{nick}</span>
-          <span style={{ fontSize: '11px', color: '#334155' }}>
-            {user.role === 2 ? 'GameMaster' : user.role === 3 ? 'Moderator' : user.role === 4 ? 'Admin' : 'Player'}
-          </span>
-
-          <button style={s.deleteBtn} onClick={() => setAvatar('')}
-            onMouseEnter={e => (e.currentTarget.style.color = '#ef4444')}
-            onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-secondary)')}>
-            <Trash2 size={12} /> Удалить фото
-          </button>
-
-          <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={e => {
-            const f = e.target.files?.[0]; if (!f) return
-            const r = new FileReader()
-            r.onload = () => setAvatar(r.result as string)
-            r.readAsDataURL(f)
-          }} />
-        </div>
-          
-        {/* Form */}
-        <div style={s.form}>
-          <div style={s.grid2}>
-            <div style={s.field}>
-              <label style={s.label}>Старый пароль</label>
-              <input type="password" value={oldPassword} onChange={e => setOldPassword(e.target.value)}
-                style={s.input} placeholder="••••••"
-                onFocus={e => e.currentTarget.style.borderColor = 'rgba(16,185,129,0.4)'}
-                onBlur={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'} />
-            </div>
-            <div style={s.field}>
-              <label style={s.label}>Новый пароль</label>
-              <input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)}
-                style={s.input} placeholder="••••••"
-                onFocus={e => e.currentTarget.style.borderColor = 'rgba(16,185,129,0.4)'}
-                onBlur={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'} />
-            </div>
-          </div>
-
-          <div style={s.grid2}>
-            <div style={s.field}>
-              <label style={s.label}>Никнейм</label>
-              <input value={nick} onChange={e => setNick(e.target.value)} style={s.input}
-                onFocus={e => e.currentTarget.style.borderColor = 'rgba(16,185,129,0.4)'}
-                onBlur={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'} />
-            </div>
-            <div style={s.field}>
-              <label style={s.label}>Email</label>
-              <input value={email} readOnly style={s.inputReadonly} />
-            </div>
-          </div>
-
-          <div style={s.field}>
-            <label style={s.label}>URL аватара</label>
-            <input value={avatar} onChange={e => setAvatar(e.target.value)} style={s.input}
-              placeholder="https://..."
-              onFocus={e => e.currentTarget.style.borderColor = 'rgba(16,185,129,0.4)'}
-              onBlur={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'} />
-          </div>
-
-          <div style={s.field}>
-            <label style={s.label}>О себе</label>
             
-            <textarea value={bio} onChange={e => setBio(e.target.value)} rows={3}
-              placeholder="Расскажите о себе..." style={s.textarea}
-              onFocus={e => e.currentTarget.style.borderColor = 'rgba(16,185,129,0.4)'}
-              onBlur={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'} />
-          </div>
+          {/* Form */}
+          <div style={s.form}>
+            <div style={s.grid2}>
+              <div style={s.field}>
+                <label style={s.label}>Старый пароль</label>
+                <input type="password" value={oldPassword} onChange={e => setOldPassword(e.target.value)}
+                  style={s.input} placeholder="••••••"
+                  onFocus={e => e.currentTarget.style.borderColor = 'rgba(16,185,129,0.4)'}
+                  onBlur={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'} />
+              </div>
+              <div style={s.field}>
+                <label style={s.label}>Новый пароль</label>
+                <input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)}
+                  style={s.input} placeholder="••••••"
+                  onFocus={e => e.currentTarget.style.borderColor = 'rgba(16,185,129,0.4)'}
+                  onBlur={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'} />
+              </div>
+            </div>
 
-          <div style={s.field}>
-            <label style={s.label}>Игровая роль</label>
-            <div style={s.roles}>
-              <button
-                style={roleBtnStyle(role === 1)}
-                onClick={() => setRole(1)}
-                type="button"
-              >
-                {role === 1 && <CheckCircle size={14} />}
-                Игрок
+            <div style={s.grid2}>
+              <div style={s.field}>
+                <label style={s.label}>Никнейм</label>
+                <input value={nick} onChange={e => setNick(e.target.value)} style={s.input}
+                  onFocus={e => e.currentTarget.style.borderColor = 'rgba(16,185,129,0.4)'}
+                  onBlur={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'} />
+              </div>
+              <div style={s.field}>
+                <label style={s.label}>Email</label>
+                <input value={email} readOnly style={s.inputReadonly} />
+              </div>
+            </div>
+
+            <div style={s.field}>
+              <label style={s.label}>URL аватара</label>
+              <input value={avatar} onChange={e => setAvatar(e.target.value)} style={s.input}
+                placeholder="https://..."
+                onFocus={e => e.currentTarget.style.borderColor = 'rgba(16,185,129,0.4)'}
+                onBlur={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'} />
+            </div>
+
+            <div style={s.field}>
+              <label style={s.label}>О себе</label>
+              <textarea value={bio} onChange={e => setBio(e.target.value)} rows={3}
+                placeholder="Расскажите о себе..." style={s.textarea}
+                onFocus={e => e.currentTarget.style.borderColor = 'rgba(16,185,129,0.4)'}
+                onBlur={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'} />
+            </div>
+
+            <div style={s.field}>
+              <label style={s.label}>Игровая роль</label>
+              <div style={s.roles}>
+                <button
+                  style={roleBtnStyle(role === 1)}
+                  onClick={() => setRole(1)}
+                  type="button"
+                >
+                  {role === 1 && <CheckCircle size={14} />}
+                  Игрок
+                </button>
+                <button
+                  style={roleBtnStyle(role === 2)}
+                  onClick={() => setRole(2)}
+                  type="button"
+                >
+                  {role === 2 && <CheckCircle size={14} />}
+                  Геймастер
+                </button>
+              </div>
+            </div>
+
+            <div style={s.actions}>
+              <button style={{ flex: 2, padding: '10px 16px', borderRadius: '8px', border: status ? '1px solid rgba(16,185,129,0.4)' : 'none', background: status ? 'rgba(16,185,129,0.1)' : 'linear-gradient(180deg,var(--green),var(--green))', color: status ? 'var(--green)' : 'white', fontSize: '14px', fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontFamily: 'inherit' }}
+                onClick={save}>
+                {status ? <CheckCircle size={15} /> : <Save size={15} />}
+                {status || 'Сохранить'}
               </button>
-              <button
-                style={roleBtnStyle(role === 2)}
-                onClick={() => setRole(2)}
-                type="button"
-              >
-                {role === 2 && <CheckCircle size={14} />}
-                Геймастер
+              <button style={s.logoutBtn} onClick={logout}
+                onMouseEnter={e => { e.currentTarget.style.color = '#ef4444'; e.currentTarget.style.borderColor = 'rgba(239,68,68,0.3)' }}
+                onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-secondary)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)' }}>
+                Выйти
               </button>
             </div>
           </div>
+        </div>
 
-          <div style={s.actions}>
-            <button style={{ flex: 2, padding: '10px 16px', borderRadius: '8px', border: status ? '1px solid rgba(16,185,129,0.4)' : 'none', background: status ? 'rgba(16,185,129,0.1)' : 'linear-gradient(180deg,var(--green),var(--green))', color: status ? 'var(--green)' : 'white', fontSize: '14px', fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontFamily: 'inherit' }}
-              onClick={save}>
-              {status ? <CheckCircle size={15} /> : <Save size={15} />}
-              {status || 'Сохранить'}
-            </button>
-            <button style={s.logoutBtn} onClick={logout}
-              onMouseEnter={e => { e.currentTarget.style.color = '#ef4444'; e.currentTarget.style.borderColor = 'rgba(239,68,68,0.3)' }}
-              onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-secondary)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)' }}>
-              Выйти
-            </button>
+        {/* НОВАЯ КАРТОЧКА: Активные игры */}
+        <div style={s.gamesCard}>
+          <h3 style={{ margin: 0, color: 'var(--text-primary)', fontSize: '16px', fontWeight: 700, letterSpacing: '0.02em', textTransform: 'uppercase' }}>
+            ⚔️ Мои Активные Игры
+          </h3>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {mySessions.length === 0 ? (
+              <div style={{ color: 'var(--text-secondary)', fontSize: '14px', fontStyle: 'italic', padding: '10px 0' }}>
+                Вы еще не записались ни на одну игру.
+              </div>
+            ) : (
+              mySessions.map(session => (
+                <div key={session.id} style={s.gameItem}
+                     onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--green-border)'}
+                     onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.04)'}>
+                  
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <a href={`#/session/${session.id}`} style={s.gameLink}
+                       onMouseEnter={e => e.currentTarget.style.color = 'var(--green)'}
+                       onMouseLeave={e => e.currentTarget.style.color = 'var(--text-primary)'}>
+                      {session.title}
+                    </a>
+                    {session.system && (
+                      <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                        {session.system} {session.setting ? `• ${session.setting}` : ''}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Дата сессии, назначенная мастером */}
+                  <div style={s.gameDateBox}>
+                    <Calendar size={14} />
+                    <span>{formatSessionDate(session.scheduledAt)}</span>
+                  </div>
+
+                </div>
+              ))
+            )}
           </div>
         </div>
+
       </div>
     </div>
   )
