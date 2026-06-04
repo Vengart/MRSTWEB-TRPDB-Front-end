@@ -47,6 +47,11 @@ const Profile: React.FC<{ id: string }> = ({ id }) => {
   const [bioText, setBioText] = useState('')
   const [avatarUrl, setAvatarUrl] = useState('')
 
+
+  // Новые состояния:
+  const [reviews, setReviews] = useState<{ likes: number; dislikes: number; reviews: any[] }>({ likes: 0, dislikes: 0, reviews: [] })
+  const [myReview, setMyReview] = useState<boolean | null>(null) // null = не оценил, true = лайк, false = дизлайк
+
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const currentUserId = getCurrentUserId()
   const isOwn = currentUserId === id
@@ -64,6 +69,16 @@ const Profile: React.FC<{ id: string }> = ({ id }) => {
         if (!res.ok) { setError('Пользователь не найден'); setLoading(false); return }
         const data: UserProfile = await res.json()
         setUser(data)
+        const reviewsRes = await fetch(`${BASE_URL}/reviews/user/${id}`)
+        if (reviewsRes.ok) {
+          const reviewsData = await reviewsRes.json()
+          setReviews(reviewsData)
+          const currentId = getCurrentUserId()
+          if (currentId) {
+            const mine = reviewsData.reviews.find((r: any) => String(r.authorUserId) === currentId)
+            setMyReview(mine ? mine.isLike : null)
+          }
+        }
         setFirstName(data.firstName || '')
         setLastName(data.lastName || '')
         setUsername(data.userName || '')
@@ -103,7 +118,39 @@ const Profile: React.FC<{ id: string }> = ({ id }) => {
       setError('Ошибка сохранения')
     }
   }
+  const vote = async (isLike: boolean) => {
+    const token = getToken()
+    if (!token) { window.location.hash = '#/login'; return }
+    if (getCurrentUserId() === id) return // нельзя голосовать за себя
 
+    const res = await fetch(`${BASE_URL}/reviews`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ targetUserId: parseInt(id), isLike })
+    })
+
+    if (res.ok) {
+      const data = await res.json()
+      if (data.removed) {
+        // Toggle — убрали оценку
+        setMyReview(null)
+        setReviews(prev => ({
+          ...prev,
+          likes: isLike ? prev.likes - 1 : prev.likes,
+          dislikes: !isLike ? prev.dislikes - 1 : prev.dislikes
+        }))
+      } else {
+        // Новая или изменённая оценка
+        const wasOpposite = myReview !== null && myReview !== isLike
+        setMyReview(isLike)
+        setReviews(prev => ({
+          ...prev,
+          likes: isLike ? prev.likes + 1 : wasOpposite ? prev.likes - 1 : prev.likes,
+          dislikes: !isLike ? prev.dislikes + 1 : wasOpposite ? prev.dislikes - 1 : prev.dislikes
+        }))
+      }
+    }
+  }
   // Загрузка аватара как base64 → сохраняем в avatarUrl
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0]; if (!f) return
@@ -172,6 +219,35 @@ const Profile: React.FC<{ id: string }> = ({ id }) => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             <label style={lbl}>О себе</label>
             <textarea readOnly value={user.bio || ''} rows={4} style={{ ...inp, resize: 'none', lineHeight: '1.6', color: 'var(--text-secondary)', cursor: 'default' }} />
+          </div>
+          {/* Оценки */}
+          <div style={{ display: 'flex', gap: 10, marginBottom: 16 }}>
+            <button
+              onClick={() => vote(true)}
+              style={{
+                flex: 1, padding: '10px 12px', borderRadius: 8, cursor: getCurrentUserId() === id ? 'not-allowed' : 'pointer',
+                border: myReview === true ? '1px solid rgba(74,124,89,0.75)' : '1px solid var(--border-green)',
+                background: myReview === true ? 'var(--green-dim)' : 'transparent',
+                color: 'var(--green-light)', fontSize: 13, fontWeight: 500, fontFamily: 'inherit',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                transition: 'all 0.15s',
+                opacity: getCurrentUserId() === id ? 0.4 : 1
+              }}>
+              👍 {reviews.likes}
+            </button>
+            <button
+              onClick={() => vote(false)}
+              style={{
+                flex: 1, padding: '10px 12px', borderRadius: 8, cursor: getCurrentUserId() === id ? 'not-allowed' : 'pointer',
+                border: myReview === false ? '1px solid rgba(239,68,68,0.6)' : '1px solid rgba(239,68,68,0.2)',
+                background: myReview === false ? 'rgba(239,68,68,0.08)' : 'transparent',
+                color: 'var(--error)', fontSize: 13, fontWeight: 500, fontFamily: 'inherit',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                transition: 'all 0.15s',
+                opacity: getCurrentUserId() === id ? 0.4 : 1
+              }}>
+              👎 {reviews.dislikes}
+            </button>
           </div>
           <div style={{ display: 'flex', gap: '10px', paddingTop: '16px', borderTop: '1px solid var(--border)', marginTop: 'auto' }}>
             <a href="#/" style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '9px 12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--text-secondary)', fontSize: '13px', textDecoration: 'none' }}>

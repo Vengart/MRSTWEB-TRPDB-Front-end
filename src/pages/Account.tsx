@@ -80,14 +80,13 @@ const Account: React.FC = () => {
 
   // Красивое форматирование даты сессии
   const formatSessionDate = (dateStr?: string) => {
-    if (!dateStr) return 'Дата не назначена';
-    const d = new Date(dateStr);
-    return d.toLocaleString('ru-RU', {
+    if (!dateStr) return 'Дата не назначена'
+    const d = new Date(dateStr)
+    return d.toLocaleDateString('ru-RU', {
       day: 'numeric',
-      month: 'short',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+      month: 'long',
+      year: 'numeric'
+    })
   }
 
   useEffect(() => {
@@ -316,7 +315,7 @@ const Account: React.FC = () => {
         {/* НОВАЯ КАРТОЧКА: Активные игры */}
         <div style={s.gamesCard}>
           <h3 style={{ margin: 0, color: 'var(--text-primary)', fontSize: '16px', fontWeight: 700, letterSpacing: '0.02em', textTransform: 'uppercase' }}>
-            ⚔️ Мои Активные Игры
+            Мои Активные Игры
           </h3>
           
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
