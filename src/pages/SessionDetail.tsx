@@ -466,8 +466,8 @@ const SessionDetail: React.FC<{ id: string; onJoin: (id: string) => Promise<void
             <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)' }}>{session.price || 'Бесплатно'}</div>
             <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Стоимость участия</div>
           </div>
-
-          {!isOwner && !isParticipant && (
+          
+          {!isOwner && !isParticipant && !(currentRole === '4') && !(currentRole === '3')&& (
             <button
               onClick={handleJoin}
               disabled={isFull || joining}
@@ -477,7 +477,7 @@ const SessionDetail: React.FC<{ id: string; onJoin: (id: string) => Promise<void
             </button>
           )}
           {isOwner && <div style={{ color: 'var(--green-light)', fontSize: 13, textAlign: 'center', fontWeight: 600 }}>Вы — Гейммастер</div>}
-          {isParticipant && <div style={{ color: 'var(--green-light)', fontSize: 13, textAlign: 'center', fontWeight: 600 }}>Вы участвуете в сессии</div>}
+          {isParticipant && !(currentRole === '4') && !(currentRole === '3')&& <div style={{ color: 'var(--green-light)', fontSize: 13, textAlign: 'center', fontWeight: 600 }}>Вы участвуете в сессии</div>}
         </div>
 
         {/* Кнопки управления для GM */}
